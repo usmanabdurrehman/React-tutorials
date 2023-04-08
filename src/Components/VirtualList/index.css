@@ -1,0 +1,8 @@
+.List {
+  border: 1px solid #e6e4dc;
+  max-width: 100%;
+}
+
+.ListItemEven {
+  background-color: #e6e4dc;
+}
