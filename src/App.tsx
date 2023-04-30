@@ -1,9 +1,19 @@
 import { useState } from "react";
-import { QueryClient, QueryClientProvider, QueryObserver } from "react-query";
-import { BMICalculator } from "./Components/BMICalculator/BMICalculator";
-import { BMICalculatorComplete } from "./Components/BMICalculator/BMICalculatorComplete";
+import {
+  QueryClient,
+  QueryClientProvider,
+  QueryObserver,
+  useQuery,
+} from "react-query";
 import { ChakraProvider } from "@chakra-ui/react";
-const MAX_AGE = 24000;
+import axios from "axios";
+import ReactQuerySuspense from "./Components/ReactQuerySuspense/ReactQuerySuspense";
+import { ReactQueryDevtools } from "react-query/devtools";
+
+const defaultQueryFn = async ({ queryKey }: any) => {
+  const { data } = await axios.get(`http://localhost:7000${queryKey[0]}`);
+  return data;
+};
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -13,7 +23,9 @@ const queryClient = new QueryClient({
       refetchOnReconnect: false,
       staleTime: 0,
       retry: 0,
-      cacheTime: MAX_AGE,
+      cacheTime: 0,
+      queryFn: defaultQueryFn,
+      suspense: true,
     },
   },
 });
@@ -22,8 +34,8 @@ export default function App() {
   return (
     <ChakraProvider>
       <QueryClientProvider client={queryClient}>
-        <BMICalculator />
-        {/* <BMICalculatorComplete /> */}
+        <ReactQuerySuspense />
+        <ReactQueryDevtools initialIsOpen={false} />
       </QueryClientProvider>
     </ChakraProvider>
   );
