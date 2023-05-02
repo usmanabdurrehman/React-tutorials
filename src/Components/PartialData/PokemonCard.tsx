@@ -16,6 +16,9 @@ const TYPE_COLOR_MAP: any = {
   poison: "purple",
   flying: "gray",
   water: "cyan",
+  bug: "green",
+  fairy: "pink",
+  electric: "yellow",
 };
 
 export default function PokemonCard({ pokemon }: { pokemon: Pokemon }) {

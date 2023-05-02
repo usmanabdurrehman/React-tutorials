@@ -5,10 +5,12 @@ import {
   QueryObserver,
   useQuery,
 } from "react-query";
-import { ChakraProvider } from "@chakra-ui/react";
+import { Box, ChakraProvider } from "@chakra-ui/react";
 import axios from "axios";
 import ReactQuerySuspense from "./Components/ReactQuerySuspense/ReactQuerySuspense";
 import { ReactQueryDevtools } from "react-query/devtools";
+import { SWRConfig } from "swr";
+import { SWRPagination } from "./Components/SWRPagination";
 
 const defaultQueryFn = async ({ queryKey }: any) => {
   const { data } = await axios.get(`http://localhost:7000${queryKey[0]}`);
@@ -25,18 +27,28 @@ const queryClient = new QueryClient({
       retry: 0,
       cacheTime: 0,
       queryFn: defaultQueryFn,
-      suspense: true,
     },
   },
 });
 
+export const axiosInstance = axios.create({
+  baseURL: "http://localhost:7000",
+});
+
 export default function App() {
   return (
-    <ChakraProvider>
-      <QueryClientProvider client={queryClient}>
-        <ReactQuerySuspense />
-        <ReactQueryDevtools initialIsOpen={false} />
-      </QueryClientProvider>
-    </ChakraProvider>
+    <SWRConfig
+      value={{
+        refreshInterval: 0,
+        fetcher: (resource, init) =>
+          axiosInstance(resource, init).then((res) => res.data),
+      }}
+    >
+      <ChakraProvider>
+        <QueryClientProvider client={queryClient}>
+          <SWRPagination />
+        </QueryClientProvider>
+      </ChakraProvider>
+    </SWRConfig>
   );
 }
