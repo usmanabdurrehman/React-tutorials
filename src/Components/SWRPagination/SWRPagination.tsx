@@ -7,7 +7,6 @@ import {
   TabPanels,
   Tabs,
 } from "@chakra-ui/react";
-import React from "react";
 import { SWRInfiniteCursorPagination } from "./SWRInfiniteCursorPagination";
 import { SWRInfiniteIndexPagination } from "./SWRInfiniteIndexPagination";
 import { SWRIndexPagination } from "./SWRSimplePagination";

@@ -11,6 +11,7 @@ import ReactQuerySuspense from "./Components/ReactQuerySuspense/ReactQuerySuspen
 import { ReactQueryDevtools } from "react-query/devtools";
 import { SWRConfig } from "swr";
 import { SWRPagination } from "./Components/SWRPagination";
+import { QueryCancellation } from "./Components/QueryCancellation";
 
 const defaultQueryFn = async ({ queryKey }: any) => {
   const { data } = await axios.get(`http://localhost:7000${queryKey[0]}`);
@@ -23,9 +24,7 @@ const queryClient = new QueryClient({
       refetchOnMount: false,
       refetchOnWindowFocus: false,
       refetchOnReconnect: false,
-      staleTime: 0,
       retry: 0,
-      cacheTime: 0,
       queryFn: defaultQueryFn,
     },
   },
@@ -37,18 +36,10 @@ export const axiosInstance = axios.create({
 
 export default function App() {
   return (
-    <SWRConfig
-      value={{
-        refreshInterval: 0,
-        fetcher: (resource, init) =>
-          axiosInstance(resource, init).then((res) => res.data),
-      }}
-    >
-      <ChakraProvider>
-        <QueryClientProvider client={queryClient}>
-          <SWRPagination />
-        </QueryClientProvider>
-      </ChakraProvider>
-    </SWRConfig>
+    <ChakraProvider>
+      <QueryClientProvider client={queryClient}>
+        <QueryCancellation />
+      </QueryClientProvider>
+    </ChakraProvider>
   );
 }
