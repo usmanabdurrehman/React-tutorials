@@ -12,6 +12,7 @@ import { ReactQueryDevtools } from "react-query/devtools";
 import { SWRConfig } from "swr";
 import { SWRPagination } from "./Components/SWRPagination";
 import { QueryCancellation } from "./Components/QueryCancellation";
+import FormikFieldArrayHelpers from "./Components/FormikFieldArrayHelpers/FormikFieldArrayHelpers";
 
 const defaultQueryFn = async ({ queryKey }: any) => {
   const { data } = await axios.get(`http://localhost:7000${queryKey[0]}`);
@@ -38,7 +39,8 @@ export default function App() {
   return (
     <ChakraProvider>
       <QueryClientProvider client={queryClient}>
-        <QueryCancellation />
+        <FormikFieldArrayHelpers />
+        {/* <QueryCancellation /> */}
       </QueryClientProvider>
     </ChakraProvider>
   );
