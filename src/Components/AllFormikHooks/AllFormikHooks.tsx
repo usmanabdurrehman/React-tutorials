@@ -16,6 +16,7 @@ import {
   Formik,
   useFormikContext,
   useFormik,
+  useField,
 } from "formik";
 import { useEffect } from "react";
 
@@ -25,15 +26,40 @@ import * as Yup from "yup";
 All Formik Hooks
 
 useFormik => use formik without React Context
+args => All props that <Formik/> accepts
+returns => All props that Formik's child component gives
 
 useFormikContext => get all formik props using Formik Context
-useField => fer field related formik props using formik context
+args => none
+returns => All props that Formik's child component gives
+
+useField => for field related formik props using formik context
+args => field name
+returns => All state related to field
 */
 
 const ValidationSchema = Yup.object({
   height: Yup.number().required("The height is required"),
   weight: Yup.number().required("The weight is required"),
 });
+
+const CustomField = () => {
+  const { values, setFieldValue, errors } = useFormikContext<{
+    height: string;
+  }>();
+  return (
+    <FormControl isInvalid={!!errors.height}>
+      <FormLabel>Height in metres</FormLabel>
+      <NumberInput>
+        <NumberInputField
+          value={values.height}
+          onChange={(value) => setFieldValue("height", value)}
+        />
+      </NumberInput>
+      <FormErrorMessage>{errors.height}</FormErrorMessage>
+    </FormControl>
+  );
+};
 
 export const AllFormikHooks = () => {
   return (
@@ -59,17 +85,7 @@ export const AllFormikHooks = () => {
             return (
               <Form>
                 <h2>BMI Calculator</h2>
-                <Field name="height">
-                  {({ field }: any) => (
-                    <FormControl isInvalid={!!errors.height}>
-                      <FormLabel>Height in metres</FormLabel>
-                      <NumberInput>
-                        <NumberInputField {...field} />
-                      </NumberInput>
-                      <FormErrorMessage>{errors.height}</FormErrorMessage>
-                    </FormControl>
-                  )}
-                </Field>
+                <CustomField />
                 <Field name="weight">
                   {({ field }: any) => (
                     <FormControl isInvalid={!!errors.weight}>
