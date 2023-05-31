@@ -12,6 +12,7 @@ import { ReactQueryDevtools } from "react-query/devtools";
 import { SWRConfig } from "swr";
 import { SWRPagination } from "./Components/SWRPagination";
 import { QueryCancellation } from "./Components/QueryCancellation";
+import { ReactSwipeableViews } from "./Components/ReactSwipeableViews/ReactSwipeableViews";
 
 const defaultQueryFn = async ({ queryKey }: any) => {
   const { data } = await axios.get(`http://localhost:7000${queryKey[0]}`);
@@ -38,7 +39,14 @@ export default function App() {
   return (
     <ChakraProvider>
       <QueryClientProvider client={queryClient}>
-        <QueryCancellation />
+        <Box
+          height="100vh"
+          display={"flex"}
+          alignItems="center"
+          justifyContent={"center"}
+        >
+          <ReactSwipeableViews />
+        </Box>
       </QueryClientProvider>
     </ChakraProvider>
   );
