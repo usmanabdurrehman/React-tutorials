@@ -1,17 +1,7 @@
-import { useState } from "react";
-import {
-  QueryClient,
-  QueryClientProvider,
-  QueryObserver,
-  useQuery,
-} from "react-query";
-import { Box, ChakraProvider } from "@chakra-ui/react";
+import { QueryClient, QueryClientProvider } from "react-query";
+import { ChakraProvider } from "@chakra-ui/react";
 import axios from "axios";
-import ReactQuerySuspense from "./Components/ReactQuerySuspense/ReactQuerySuspense";
-import { ReactQueryDevtools } from "react-query/devtools";
-import { SWRConfig } from "swr";
-import { SWRPagination } from "./Components/SWRPagination";
-import { QueryCancellation } from "./Components/QueryCancellation";
+import { TanstackTableVirtualized } from "./Components/TanstackTableVirtualized";
 
 const defaultQueryFn = async ({ queryKey }: any) => {
   const { data } = await axios.get(`http://localhost:7000${queryKey[0]}`);
@@ -38,7 +28,7 @@ export default function App() {
   return (
     <ChakraProvider>
       <QueryClientProvider client={queryClient}>
-        <QueryCancellation />
+        <TanstackTableVirtualized />
       </QueryClientProvider>
     </ChakraProvider>
   );

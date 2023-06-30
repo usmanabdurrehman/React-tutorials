@@ -1,0 +1,1 @@
+export { TanstackTableVirtualized } from "./TanstackTableVirtualized";
