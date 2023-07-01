@@ -11,7 +11,7 @@ export const TanstackQueryNetworkMode = () => {
       );
       return data;
     },
-    { networkMode: "offlineFirst" }
+    { networkMode: "offlineFirst" } // online | always | offlineFirst
   );
 
   return (
