@@ -17,7 +17,7 @@ export const TanstackQueryOnlineManager = () => {
       <Flex>
         <Button
           colorScheme={"whatsapp"}
-          onClick={() => onlineManager.setOnline(!onlineManager.isOnline())}
+          onClick={() => onlineManager.setOnline(true)}
         >
           Toggle Online Status
         </Button>
@@ -47,7 +47,9 @@ export const TanstackQueryOnlineManager = () => {
       <Flex>
         <Button
           colorScheme={"whatsapp"}
-          onClick={() => onlineManager.hasListeners()}
+          onClick={() =>
+            console.log("has listeners", onlineManager.hasListeners())
+          }
         >
           Has Listeners
         </Button>
