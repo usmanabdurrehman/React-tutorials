@@ -1,17 +1,9 @@
 import { useState } from "react";
-import {
-  QueryClient,
-  QueryClientProvider,
-  QueryObserver,
-  useQuery,
-} from "react-query";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Box, ChakraProvider } from "@chakra-ui/react";
 import axios from "axios";
-import ReactQuerySuspense from "./Components/ReactQuerySuspense/ReactQuerySuspense";
-import { ReactQueryDevtools } from "react-query/devtools";
-import { SWRConfig } from "swr";
-import { SWRPagination } from "./Components/SWRPagination";
-import { QueryCancellation } from "./Components/QueryCancellation";
+import TanstackQueryQueryKeyFilters from "./Components/TanstackQueryQueryKeyFilters/TanstackQueryQueryKeyFilters";
+import { ReactQueryDevtoolsPanel } from "@tanstack/react-query-devtools";
 
 const defaultQueryFn = async ({ queryKey }: any) => {
   const { data } = await axios.get(`http://localhost:7000${queryKey[0]}`);
@@ -38,7 +30,12 @@ export default function App() {
   return (
     <ChakraProvider>
       <QueryClientProvider client={queryClient}>
-        <QueryCancellation />
+        <TanstackQueryQueryKeyFilters />
+        <ReactQueryDevtoolsPanel
+          style={{ height: "100%" }}
+          setIsOpen={() => {}}
+          onDragStart={() => {}}
+        />
       </QueryClientProvider>
     </ChakraProvider>
   );
