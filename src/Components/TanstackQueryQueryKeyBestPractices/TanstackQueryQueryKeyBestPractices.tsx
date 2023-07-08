@@ -1,4 +1,8 @@
-import { useQuery, useInfiniteQuery } from "@tanstack/react-query";
+import {
+  useQuery,
+  useInfiniteQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
 
 /*
 QUERY KEYS BEST PRACTICES
@@ -9,23 +13,22 @@ QUERY KEYS BEST PRACTICES
 5) Colocation
 */
 
-const todos = ["TODOS"];
-const todosList = ["TODOS", "LIST"];
-const todosListByFilter = ["TODOS", "LIST", { archived: false }];
-const todosById = ["TODOS", 1];
-const todosDetails = ["TODOS", "DETAILS"];
+const Structure = ["SCHEDULER", "TODOS", "LIST", { archived: false }];
 
-const todoQueryKeys = {
-  all: ["TODOS"] as const,
-  todosList: () => [...todoQueryKeys.all, "LIST"] as const,
-  todosListByFilter: (filter: any) =>
-    [...todoQueryKeys.todosList(), filter] as const,
-  todosById: (id: number) => [...todoQueryKeys.all, id],
+const todosQueryKey = {
+  all: ["TODOS"],
+  list: () => [...todosQueryKey.all, "LIST"],
+  listByFilter: (filter: { archived: boolean }) => [
+    ...todosQueryKey.list(),
+    filter,
+  ],
+  findById: (id: number) => [...todosQueryKey.all, id],
+  details: () => [...todosQueryKey.all, "DETAILS"],
 };
 
 export default function TanstackQueryQueryKeyBestPractices() {
-  useQuery(["QUERY", "1"]);
-  useInfiniteQuery(["QUERY"]);
-  useQuery(["QUERY", "2"]);
-  useQuery(["DIFFERENT_QUERY", "2"]);
+  useQuery(["GET_TODOS"]);
+  useInfiniteQuery(["GET_TODOS"]);
+
+  const queryClient = useQueryClient();
 }
