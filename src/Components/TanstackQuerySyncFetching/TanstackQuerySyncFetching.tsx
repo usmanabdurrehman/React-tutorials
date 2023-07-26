@@ -43,10 +43,12 @@ export default function TanstackQuerySyncFetching() {
                 );
                 return data;
               },
-              { staleTime: 10000 }
+              {
+                staleTime: 5000,
+              }
             );
-            const isUserDuplicate = users?.find((user) => user.name === name);
-            if (isUserDuplicate) setError("Duplicate Error");
+            const isDuplicate = users.find((user) => user.name === name);
+            if (isDuplicate) setError("The Name is Already Present");
             else setError("");
           }}
           mt={4}
