@@ -6,6 +6,7 @@ import {
   getCoreRowModel,
   useReactTable,
 } from "@tanstack/react-table";
+import "./index.css";
 
 type Person = {
   firstName: string;
@@ -46,32 +47,58 @@ const defaultData: Person[] = [
 const columnHelper = createColumnHelper<Person>();
 
 const columns = [
-  columnHelper.accessor("firstName", {
-    cell: (info) => info.getValue(),
-    footer: (info) => info.column.id,
+  columnHelper.display({
+    id: "select-person",
+    cell: () => <input type="checkbox" />,
+    header: "Lmao",
+    footer: "xd",
   }),
-  columnHelper.accessor((row) => row.lastName, {
-    id: "lastName",
-    cell: (info) => <i>{info.getValue()}</i>,
-    header: () => <span>Last Name</span>,
-    footer: (info) => "lmao son",
+  columnHelper.group({
+    id: "name",
+    header: "Name",
+    columns: [
+      columnHelper.accessor("firstName", {
+        cell: (info) => info.getValue(),
+        header: "First Name",
+      }),
+      columnHelper.accessor("lastName", {
+        cell: (info) => <i>{info.getValue()}</i>,
+        header: () => <span>Last Name</span>,
+      }),
+    ],
   }),
-  columnHelper.accessor("age", {
-    header: () => "Age",
-    cell: (info) => info.renderValue(),
-    footer: (info) => info.column.id,
-  }),
-  columnHelper.accessor("visits", {
-    header: () => <span>Visits</span>,
-    footer: (info) => info.column.id,
-  }),
-  columnHelper.accessor("status", {
-    header: "Status",
-    footer: (info) => info.column.id,
-  }),
-  columnHelper.accessor("progress", {
-    header: "Profile Progress",
-    footer: (info) => info.column.id,
+  columnHelper.group({
+    id: "meta",
+    header: "Meta",
+    columns: [
+      columnHelper.accessor("age", {
+        header: () => "Age",
+        cell: (info) => {
+          console.log({ info });
+          return info.renderValue();
+        },
+      }),
+      columnHelper.accessor("visits", {
+        header: () => <span>Visits</span>,
+        footer: ({ column }) => {
+          // console.log({
+          //   getAllColumns: column.getAggregationFn()?.(
+          //     "visits",
+          //     column.getLeafColumns(),
+          //     "sum"
+          //   ),
+          // });
+          return <p>s</p>;
+        },
+      }),
+      columnHelper.accessor("status", {
+        header: "Status",
+      }),
+      columnHelper.accessor("progress", {
+        header: "Profile Progress",
+        cell: (info) => <progress value={info.getValue()} max="100" />,
+      }),
+    ],
   }),
 ];
 
@@ -88,10 +115,10 @@ export default function BasicTable() {
     <div className="p-2">
       <table>
         <thead>
-          {table.getHeaderGroups().map((headerGroup) => (
+          {table.getHeaderGroups().map((headerGroup, index) => (
             <tr key={headerGroup.id}>
               {headerGroup.headers.map((header) => (
-                <th key={header.id}>
+                <th key={header.id} colSpan={header.colSpan}>
                   {header.isPlaceholder
                     ? null
                     : flexRender(
@@ -118,14 +145,14 @@ export default function BasicTable() {
           {table.getFooterGroups().map((footerGroup) => (
             <tr key={footerGroup.id}>
               {footerGroup.headers.map((header) => (
-                <th key={header.id}>
+                <td key={header.id} colSpan={header.colSpan}>
                   {header.isPlaceholder
                     ? null
                     : flexRender(
                         header.column.columnDef.footer,
                         header.getContext()
                       )}
-                </th>
+                </td>
               ))}
             </tr>
           ))}
