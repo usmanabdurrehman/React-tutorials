@@ -12,9 +12,8 @@ type Person = {
   firstName: string;
   lastName: string;
   age: number;
-  visits: number;
-  status: string;
   progress: number;
+  visits: number;
 };
 
 const defaultData: Person[] = [
@@ -22,25 +21,22 @@ const defaultData: Person[] = [
     firstName: "tanner",
     lastName: "linsley",
     age: 24,
-    visits: 100,
-    status: "In Relationship",
     progress: 50,
+    visits: 10,
   },
   {
     firstName: "tandy",
     lastName: "miller",
     age: 40,
-    visits: 40,
-    status: "Single",
     progress: 80,
+    visits: 18,
   },
   {
     firstName: "joe",
     lastName: "dirte",
     age: 45,
-    visits: 20,
-    status: "Complicated",
     progress: 10,
+    visits: 20,
   },
 ];
 
@@ -50,20 +46,17 @@ const columns = [
   columnHelper.display({
     id: "select-person",
     cell: () => <input type="checkbox" />,
-    header: "Lmao",
-    footer: "xd",
   }),
   columnHelper.group({
     id: "name",
     header: "Name",
     columns: [
-      columnHelper.accessor("firstName", {
-        cell: (info) => info.getValue(),
+      columnHelper.accessor((person) => person.firstName, {
         header: "First Name",
+        cell: (info) => <p style={{ color: "blue" }}>{info.renderValue()}</p>,
       }),
-      columnHelper.accessor("lastName", {
-        cell: (info) => <i>{info.getValue()}</i>,
-        header: () => <span>Last Name</span>,
+      columnHelper.accessor((person) => person.lastName, {
+        header: "Last Name",
       }),
     ],
   }),
@@ -71,31 +64,21 @@ const columns = [
     id: "meta",
     header: "Meta",
     columns: [
-      columnHelper.accessor("age", {
-        header: () => "Age",
-        cell: (info) => {
-          console.log({ info });
-          return info.renderValue();
-        },
+      columnHelper.accessor((person) => person.age, {
+        header: "Age",
       }),
       columnHelper.accessor("visits", {
-        header: () => <span>Visits</span>,
-        footer: ({ column }) => {
-          // console.log({
-          //   getAllColumns: column.getAggregationFn()?.(
-          //     "visits",
-          //     column.getLeafColumns(),
-          //     "sum"
-          //   ),
-          // });
-          return <p>s</p>;
-        },
+        header: "Visits",
+        footer: ({ table }) =>
+          table
+            .getFilteredRowModel()
+            .rows.reduce(
+              (total, row) => total + Number(row.getValue("visits")),
+              0
+            ),
       }),
-      columnHelper.accessor("status", {
-        header: "Status",
-      }),
-      columnHelper.accessor("progress", {
-        header: "Profile Progress",
+      columnHelper.accessor((person) => person.progress, {
+        header: "Progress",
         cell: (info) => <progress value={info.getValue()} max="100" />,
       }),
     ],
@@ -103,10 +86,8 @@ const columns = [
 ];
 
 export default function BasicTable() {
-  const [data, setData] = React.useState(() => [...defaultData]);
-
   const table = useReactTable({
-    data,
+    data: defaultData,
     columns,
     getCoreRowModel: getCoreRowModel(),
   });
