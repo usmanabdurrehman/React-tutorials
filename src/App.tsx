@@ -1,5 +1,5 @@
 import { QueryClient, QueryClientProvider } from "react-query";
-import { ChakraProvider } from "@chakra-ui/react";
+import { ColorSelect } from "./Components/ColorSelect";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -14,10 +14,8 @@ const queryClient = new QueryClient({
 
 export default function App() {
   return (
-    <ChakraProvider>
-      <QueryClientProvider client={queryClient}>
-        {/* Tutorial Code Here */}
-      </QueryClientProvider>
-    </ChakraProvider>
+    <QueryClientProvider client={queryClient}>
+      <ColorSelect />
+    </QueryClientProvider>
   );
 }
