@@ -5,12 +5,14 @@ type TodoFilters = {
 };
 
 export const todoKeys = createQueryKeys("todos", {
-  detail: (todoId: string) => [todoId],
-  list: (filters: TodoFilters) => ({
-    queryKey: [{ filters }],
-    queryFn: (ctx) =>
-      fetch("https://jsonplaceholder.typicode.com/todos").then((res) =>
-        res.json()
-      ),
-  }),
+  detail: (id: number) => [id],
+  list: (filters: TodoFilters) => {
+    return {
+      queryKey: [{ filters }],
+      queryFn: () =>
+        fetch("https://jsonplaceholder.typicode.com/todos").then((res) =>
+          res.json()
+        ),
+    };
+  },
 });
