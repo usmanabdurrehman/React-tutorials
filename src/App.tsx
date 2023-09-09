@@ -1,5 +1,9 @@
-import { QueryClient, QueryClientProvider } from "react-query";
-import { ChakraProvider } from "@chakra-ui/react";
+import {
+  QueryCache,
+  QueryClient,
+  QueryClientProvider,
+} from "@tanstack/react-query";
+import { NewOptimistic } from "./Features/NewOptimistic";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -10,14 +14,15 @@ const queryClient = new QueryClient({
       retry: 0,
     },
   },
+  queryCache: new QueryCache({
+    onError: (error) => alert(`Something went wrong: ${error.message}`),
+  }),
 });
 
 export default function App() {
   return (
-    <ChakraProvider>
-      <QueryClientProvider client={queryClient}>
-        {/* Tutorial Code Here */}
-      </QueryClientProvider>
-    </ChakraProvider>
+    <QueryClientProvider client={queryClient}>
+      <NewOptimistic />
+    </QueryClientProvider>
   );
 }

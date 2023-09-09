@@ -1309,6 +1309,19 @@
   resolved "https://registry.yarnpkg.com/@popperjs/core/-/core-2.11.7.tgz#ccab5c8f7dc557a52ca3288c10075c9ccd37fff7"
   integrity sha512-Cr4OjIkipTtcXKjAsm8agyleBuDHvxzeBoa1v543lbv1YaIwQjESsVcmjiWiPEbC1FIeHOG/Op9kdCmAmiS3Kw==
 
+"@tanstack/query-core@5.0.0-beta.23":
+  version "5.0.0-beta.23"
+  resolved "https://registry.yarnpkg.com/@tanstack/query-core/-/query-core-5.0.0-beta.23.tgz#dd3b120bcec37ece1507f225ba2c013739808ab5"
+  integrity sha512-Qp+U4EltOl7y8VZIhxy4eZR5xFnXll28Urp28e6ag10D69yYKRApS2O+ufcVCxOcm1GFv4rpp19gYrpoqHeWgA==
+
+"@tanstack/react-query@^5.0.0-beta.23":
+  version "5.0.0-beta.23"
+  resolved "https://registry.yarnpkg.com/@tanstack/react-query/-/react-query-5.0.0-beta.23.tgz#43e01604ffe4a57107fed6f6c38c002aa8d5097f"
+  integrity sha512-iaqcgUEf1aSVy60wxMt/p9joWyQYKa9eXn0TMdNmPUpH/SwiDeomiHFgvp1sP4vq+s32/BnygeNzbYFqG9ppJg==
+  dependencies:
+    "@tanstack/query-core" "5.0.0-beta.23"
+    client-only "0.0.1"
+
 "@tanstack/react-virtual@^3.0.0-beta.36":
   version "3.0.0-beta.36"
   resolved "https://registry.npmjs.org/@tanstack/react-virtual/-/react-virtual-3.0.0-beta.36.tgz"
@@ -1612,6 +1625,11 @@ cipher-base@^1.0.0, cipher-base@^1.0.1, cipher-base@^1.0.3:
   dependencies:
     inherits "^2.0.1"
     safe-buffer "^5.0.1"
+
+client-only@0.0.1:
+  version "0.0.1"
+  resolved "https://registry.yarnpkg.com/client-only/-/client-only-0.0.1.tgz#38bba5d403c41ab150bff64a95c85013cf73bca1"
+  integrity sha512-IV3Ou0jSMzZrd3pZ48nLkT9DA7Ag1pnPzaiQhpW7c3RbcqqzvzzVu+L8gfqMp/8IM2MQtSiqaCxrrcfu8I8rMA==
 
 clone@~0.1.9:
   version "0.1.19"
