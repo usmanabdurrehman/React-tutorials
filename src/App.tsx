@@ -1,9 +1,5 @@
-import {
-  QueryCache,
-  QueryClient,
-  QueryClientProvider,
-} from "@tanstack/react-query";
-import { NewOptimistic } from "./Features/NewOptimistic";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { NewOptimistic } from "./NewOptimistic";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -14,9 +10,6 @@ const queryClient = new QueryClient({
       retry: 0,
     },
   },
-  queryCache: new QueryCache({
-    onError: (error) => alert(`Something went wrong: ${error.message}`),
-  }),
 });
 
 export default function App() {
