@@ -25,20 +25,21 @@ export const NewOptimistic = () => {
       ]),
   });
 
-  console.log({ data });
-
   return (
     <div style={{ margin: 20 }}>
       <ul>
-        {data?.map((todo: any) => (
-          <li key={todo.id}>{todo.name}</li>
+        {data?.map((user: any) => (
+          <li key={user.id}>{user.name}</li>
         ))}
         {isPending && (
           <li style={{ opacity: isPending ? 0.5 : 1 }}>{variables}</li>
         )}
       </ul>
-      <button onClick={() => mutate("Grocery")} style={{ marginLeft: 15 }}>
-        Add Grocery todo
+      <button
+        onClick={() => mutate("David Beckham")}
+        style={{ marginLeft: 15 }}
+      >
+        Add User
       </button>
     </div>
   );
