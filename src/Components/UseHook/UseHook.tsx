@@ -1,17 +1,32 @@
-import React, { use } from "react";
+import React, { useEffect, useState, use, Suspense } from "react";
+import { timeout } from "../../utils";
+import { useQuery } from "@tanstack/react-query";
+import { ErrorBoundary } from "react-error-boundary";
 
-// https://jsonplaceholder.typicode.com/users
+// http://localhost:7000/users
 
-const timeout = (numSeconds: number) =>
-  new Promise((resolve, reject) => setTimeout(resolve, numSeconds));
+const promise = fetch("http://localhost:7000/error").then((res) => res.json());
 
-const promise = new Promise(async (resolve) => {
-  await timeout(4000);
-  resolve("123");
-});
+const Child = ({ shouldLoad }: { shouldLoad: boolean }) => {
+  let data;
+
+  if (shouldLoad) data = use(promise);
+
+  return (
+    <ul>
+      {data?.map((user: any) => (
+        <li>{user?.name}</li>
+      ))}
+    </ul>
+  );
+};
 
 export default function UseHook() {
-  const users = use(promise);
-
-  return <div>{JSON.stringify(users)}</div>;
+  return (
+    <ErrorBoundary fallback={<p>Something Happened!</p>}>
+      <Suspense fallback={<p>Loading...</p>}>
+        <Child shouldLoad={false} />
+      </Suspense>
+    </ErrorBoundary>
+  );
 }
