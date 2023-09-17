@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useMemo, useState, useEffect } from "react";
 import { useDebounce } from "use-debounce";
 import { names } from "../constants";
 
@@ -13,6 +13,10 @@ export default function Debounce() {
       ),
     [debouncedFilter]
   );
+
+  useEffect(() => {
+    console.log("filteredNames updated");
+  }, [filteredNames]);
 
   return (
     <div style={{ height: "96vh", overflow: "auto" }}>

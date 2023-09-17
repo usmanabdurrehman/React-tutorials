@@ -1,18 +1,18 @@
-import React from "react";
+import React, { Fragment } from "react";
 
 const otherSentences = ["Other Sentence 1", "Other Sentence 2"];
 
 export default function Fragments() {
   return (
-    <div>
+    <>
       <p>This is a sentence</p>
       <p>This is another sentence</p>
       {otherSentences.map((sentence, index) => (
-        <div>
+        <Fragment key={index}>
           <p>Sentence No #{index + 1}</p>
           <p>{sentence}</p>
-        </div>
+        </Fragment>
       ))}
-    </div>
+    </>
   );
 }

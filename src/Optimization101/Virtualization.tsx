@@ -12,9 +12,6 @@ export default function Virtualization() {
       <List height={700} itemCount={1000} itemSize={35} width={800}>
         {Row}
       </List>
-      {/* {names.map(({ name }) => (
-        <div>{name}</div>
-      ))} */}
     </div>
   );
 }

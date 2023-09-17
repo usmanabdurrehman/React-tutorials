@@ -36,6 +36,7 @@ const Card = React.memo(
 
 export default function Memoization() {
   const [count, setCount] = useState(0);
+
   const cardContent = useMemo(() => ["Comment 1", "Comment 2"], []);
   const onClick = useCallback(() => {}, []);
 

@@ -1,5 +1,3 @@
-import { QueryClient, QueryClientProvider } from "react-query";
-import { ChakraProvider } from "@chakra-ui/react";
 import Keys from "./Optimization101/Keys";
 import Transition from "./Optimization101/Transition";
 import Debounce from "./Optimization101/Debounce";
@@ -9,31 +7,17 @@ import State from "./Optimization101/State";
 import Fragments from "./Optimization101/Fragments";
 import Memoization from "./Optimization101/Memoization";
 
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      refetchOnMount: false,
-      refetchOnWindowFocus: false,
-      refetchOnReconnect: false,
-      retry: 0,
-    },
-  },
-});
-
 export default function App() {
   return (
-    // <ChakraProvider>
-    <QueryClientProvider client={queryClient}>
-      {/* <Keys /> */}
-      {/* <Transition /> */}
-      {/* <Debounce /> */}
-      {/* <Virtualization /> */}
+    <div>
       {/* <LazyWrapper /> */}
       {/* <State /> */}
       {/* <Fragments /> */}
       {/* <Memoization /> */}
-      {/* <DefaultProps /> */}
-    </QueryClientProvider>
-    // </ChakraProvider>
+      {/* <Keys /> */}
+      {/* <Transition /> */}
+      {/* <Debounce /> */}
+      <Virtualization />
+    </div>
   );
 }

@@ -22,7 +22,7 @@ export default function Keys() {
       </div>
       <ul>
         {filteredNames.map(({ name, id }) => (
-          <li key={name}>{name}</li>
+          <li key={id}>{name}</li>
         ))}
       </ul>
     </div>

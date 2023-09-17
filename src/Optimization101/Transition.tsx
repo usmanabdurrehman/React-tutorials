@@ -14,6 +14,7 @@ export default function Transition() {
           onChange={(e) => {
             const value = e.target.value;
             setFilter(value);
+
             startTransition(() => {
               setFilteredNames(
                 names.filter(({ name }) =>
