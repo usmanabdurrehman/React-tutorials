@@ -8,6 +8,8 @@ export default defineConfig({
     },
   },
   e2e: {
-    baseUrl: "http://localhost:1234",
+    specPattern: "src/Tests/*.cy.{js,jsx,ts,tsx}",
+    supportFile: false,
+    testIsolation: false,
   },
 });
