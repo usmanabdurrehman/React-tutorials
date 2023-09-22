@@ -1,23 +1,12 @@
-import { QueryClient, QueryClientProvider } from "react-query";
-import { ChakraProvider } from "@chakra-ui/react";
-
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      refetchOnMount: false,
-      refetchOnWindowFocus: false,
-      refetchOnReconnect: false,
-      retry: 0,
-    },
-  },
-});
+import Login from "./Components/Login";
+import Profile from "./Components/Profile";
 
 export default function App() {
   return (
-    <ChakraProvider>
-      <QueryClientProvider client={queryClient}>
-        {/* Tutorial Code Here */}
-      </QueryClientProvider>
-    </ChakraProvider>
+    <div>
+      <Login />
+      <div style={{ margin: 20 }}></div>
+      <Profile />
+    </div>
   );
 }
