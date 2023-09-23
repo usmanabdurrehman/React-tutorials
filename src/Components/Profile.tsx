@@ -1,8 +1,9 @@
 import { useStore } from "@tanstack/react-store";
+import { store } from "../store";
 import { User } from "../types";
 
 export default function Profile() {
-  let user: User | undefined;
+  let user = useStore(store, store=>store.state.user)
   if (!user) return <p>No User Information</p>;
 
   return (
