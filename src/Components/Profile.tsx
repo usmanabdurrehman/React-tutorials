@@ -3,7 +3,7 @@ import { store } from "../store";
 import { User } from "../types";
 
 export default function Profile() {
-  let user = useStore(store, store=>store.state.user)
+  let user = useStore(store, (store) => store.state.user);
   if (!user) return <p>No User Information</p>;
 
   return (

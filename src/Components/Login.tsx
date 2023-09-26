@@ -1,5 +1,5 @@
 import React from "react";
-import {store} from '../store'
+import { store } from "../store";
 
 const user = {
   name: "Alex Reynolds",
@@ -10,9 +10,15 @@ const user = {
 export default function Login() {
   return (
     <div>
-      <button onClick={() => store.setState(() => {
-        return {state:{user}}
-      })}>Set User</button>
+      <button
+        onClick={() =>
+          store.setState(() => {
+            return { state: { user } };
+          })
+        }
+      >
+        Set User
+      </button>
     </div>
   );
 }
