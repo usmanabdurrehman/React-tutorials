@@ -6,4 +6,5 @@ export type User = {
   password: string;
   birthDate: Date;
   registeredAt: Date;
+  id: number;
 };

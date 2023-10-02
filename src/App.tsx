@@ -1,9 +1,10 @@
+import { ChakraProvider } from "@chakra-ui/react";
 import { BasicTable } from "./Components/BasicTable";
 
 export default function App() {
   return (
-    <div>
+    <ChakraProvider>
       <BasicTable />
-    </div>
+    </ChakraProvider>
   );
 }

@@ -4,7 +4,7 @@ import { faker } from "@faker-js/faker";
 
 faker.seed(124);
 
-export function createRandomUser(): User {
+export function createRandomUser() {
   return {
     userId: faker.string.uuid(),
     name: faker.internet.displayName(),
@@ -16,6 +16,8 @@ export function createRandomUser(): User {
   };
 }
 
-export const USERS: User[] = faker.helpers.multiple(createRandomUser, {
-  count: 1000,
-});
+export const USERS: User[] = faker.helpers
+  .multiple(createRandomUser, {
+    count: 1000,
+  })
+  .map((data, index) => ({ ...data, id: index }));
