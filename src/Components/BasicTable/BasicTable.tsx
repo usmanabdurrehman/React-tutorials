@@ -43,6 +43,8 @@ import {
   FaDiceFour,
   FaEllipsisVertical,
   FaMapPin,
+  FaMinus,
+  FaPlus,
 } from "react-icons/fa6";
 import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
 
@@ -74,10 +76,46 @@ const reorder = (
 };
 
 const columns = [
+  columnHelper.display({
+    id: "selection",
+    header: ({ table }) => {
+      return (
+        <Checkbox
+          isChecked={table.getIsAllRowsSelected()}
+          isIndeterminate={table.getIsSomeRowsSelected()}
+          onChange={table.getToggleAllRowsSelectedHandler()}
+        />
+      );
+    },
+    cell: ({ row }) => {
+      return (
+        <Checkbox
+          isChecked={row.getIsSelected()}
+          isIndeterminate={row.getIsSomeSelected()}
+          onChange={row.getToggleSelectedHandler()}
+        />
+      );
+    },
+  }),
+  columnHelper.display({
+    id: "expander",
+    cell: ({ row }) => {
+      return row.getCanExpand() ? (
+        <IconButton
+          aria-label="Expand Row"
+          icon={row.getIsExpanded() ? <FaMinus /> : <FaPlus />}
+          onClick={row.getToggleExpandedHandler()}
+          size="xs"
+        />
+      ) : null;
+    },
+  }),
   columnHelper.accessor("id", {
+    id: "id",
     header: "Id",
   }),
   columnHelper.accessor("avatar", {
+    id: "avatar",
     header: "Avatar",
     cell: (info) => (
       <div
@@ -95,35 +133,34 @@ const columns = [
     ),
   }),
   columnHelper.accessor("name", {
+    id: "name",
     header: "Name",
   }),
   columnHelper.accessor("email", {
+    id: "email",
     header: "Email",
   }),
   columnHelper.accessor("birthDate", {
+    id: "birthDate",
     header: "Birth date",
     cell: (info) => moment(info.getValue()).format("MM/DD/YYYY"),
     // size: 400,
   }),
   columnHelper.accessor("registeredAt", {
+    id: "registeredAt",
     header: "Registered at",
     cell: (info) => moment(info.getValue()).format("MM/DD/YYYY"),
   }),
 ];
 
-const columnIds = [
-  "id",
-  "avatar",
-  "name",
-  "email",
-  "birthDate",
-  "registeredAt",
-];
+const columnIds = columns.map((column) => column.id) as string[];
 
 export default function BasicTable() {
   const table = useReactTable<User>({
     data: USERS,
     columns,
+    enableRowSelection: true,
+    getRowCanExpand: () => true,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
     getSortedRowModel: getSortedRowModel(),
@@ -136,6 +173,7 @@ export default function BasicTable() {
         birthDate: true,
         registeredAt: true,
       },
+      columnOrder: columnIds,
     },
     // Controlled tutorial
     state: {},
@@ -147,7 +185,7 @@ export default function BasicTable() {
     .filter(([key, value]) => value)
     .map(([key]) => key);
 
-  console.log("columnVisibilityCheckboxState", columnVisibilityCheckboxState);
+  console.log("columnOrder", table.getState().columnOrder);
 
   return (
     <Flex height="96vh" direction={"column"}>
@@ -333,18 +371,45 @@ export default function BasicTable() {
 
           <tbody>
             {table.getRowModel().rows.map((row) => (
-              <tr key={row.id} style={{ width: "100%" }}>
-                {row.getVisibleCells().map((cell) => {
-                  return (
-                    <td key={cell.id}>
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext()
-                      )}
+              <>
+                <tr key={row.id} style={{ width: "100%" }}>
+                  {row.getVisibleCells().map((cell) => {
+                    return (
+                      <td key={cell.id}>
+                        {flexRender(
+                          cell.column.columnDef.cell,
+                          cell.getContext()
+                        )}
+                      </td>
+                    );
+                  })}
+                </tr>
+                <tr>
+                  {row.getIsExpanded() && (
+                    <td colSpan={row.getVisibleCells().length}>
+                      <Flex height={150} gap={4} p={2}>
+                        <Flex width={150}>
+                          <img
+                            src={row.original.avatar}
+                            height="100%"
+                            width="100%"
+                          />
+                        </Flex>
+                        <Box width="50%">
+                          <p>Name: {row.original.name}</p>
+                          <p>Email: {row.original.email}</p>
+                          <p>
+                            DOB:{" "}
+                            {moment(row.original.birthDate).format(
+                              "MM/DD/YYYY"
+                            )}
+                          </p>
+                        </Box>
+                      </Flex>
                     </td>
-                  );
-                })}
-              </tr>
+                  )}
+                </tr>
+              </>
             ))}
           </tbody>
           <tfoot>
