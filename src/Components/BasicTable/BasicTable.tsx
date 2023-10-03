@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 
 import {
   ColumnOrderState,
@@ -7,20 +7,41 @@ import {
   flexRender,
   getCoreRowModel,
   getPaginationRowModel,
+  getSortedRowModel,
   PaginationState,
   Table,
   useReactTable,
+  VisibilityState,
 } from "@tanstack/react-table";
 import "./index.css";
 import { User } from "../../types";
 import { USERS } from "../../data";
 import moment from "moment";
-import { Box, Flex, IconButton } from "@chakra-ui/react";
+import {
+  Box,
+  Checkbox,
+  CheckboxGroup,
+  Flex,
+  IconButton,
+  Menu,
+  MenuButton,
+  MenuItem,
+  MenuList,
+  Popover,
+  PopoverBody,
+  PopoverContent,
+  PopoverTrigger,
+  Radio,
+  RadioGroup,
+  Stack,
+} from "@chakra-ui/react";
 import {
   FaAngleLeft,
   FaAngleRight,
   FaAnglesLeft,
   FaAnglesRight,
+  FaDiceFour,
+  FaEllipsisVertical,
   FaMapPin,
 } from "react-icons/fa6";
 import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
@@ -34,7 +55,7 @@ const getItemStyle = (isDragging: boolean, draggableStyle: any) => ({
   userSelect: "none",
 
   // change background colour if dragging
-  background: isDragging ? "lightgreen" : "grey",
+  background: isDragging ? "lightgray" : "white",
 
   // styles we need to apply on draggables
   ...draggableStyle,
@@ -53,8 +74,11 @@ const reorder = (
 };
 
 const columns = [
-  columnHelper.accessor("id", {}),
+  columnHelper.accessor("id", {
+    header: "Id",
+  }),
   columnHelper.accessor("avatar", {
+    header: "Avatar",
     cell: (info) => (
       <div
         style={{
@@ -70,73 +94,117 @@ const columns = [
       </div>
     ),
   }),
-  columnHelper.accessor("name", {}),
-  columnHelper.accessor("email", {}),
+  columnHelper.accessor("name", {
+    header: "Name",
+  }),
+  columnHelper.accessor("email", {
+    header: "Email",
+  }),
   columnHelper.accessor("birthDate", {
+    header: "Birth date",
     cell: (info) => moment(info.getValue()).format("MM/DD/YYYY"),
     // size: 400,
   }),
   columnHelper.accessor("registeredAt", {
+    header: "Registered at",
     cell: (info) => moment(info.getValue()).format("MM/DD/YYYY"),
   }),
 ];
 
-const columnOrderInitial = [
+const columnIds = [
   "id",
   "avatar",
   "name",
   "email",
   "birthDate",
   "registeredAt",
-].map((column, index) => ({ label: column, id: index }));
+];
 
 export default function BasicTable() {
-  const [pagination, setPagination] = useState<PaginationState>({
-    pageIndex: 0,
-    pageSize: 10,
-  });
-
-  const [columnOrder, setColumnOrder] = useState<ColumnOrderState>([
-    "id",
-    "avatar",
-    "name",
-    "email",
-    "birthDate",
-    "registeredAt",
-  ]);
-
-  const [columnPin, setColumnPin] = useState<ColumnPinningState>({
-    left: ["id"],
-    right: ["registeredAt"],
-  });
-
-  const { pageIndex, pageSize } = pagination;
-
-  const table = useReactTable({
+  const table = useReactTable<User>({
     data: USERS,
     columns,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
-    onPaginationChange: setPagination,
-    onColumnOrderChange: setColumnOrder,
-    onColumnPinningChange: setColumnPin,
-    state: {
-      columnPinning: columnPin,
-      columnOrder,
+    getSortedRowModel: getSortedRowModel(),
+    initialState: {
       columnVisibility: {
-        firstName: false,
-      },
-      pagination: {
-        pageSize,
-        pageIndex,
+        id: true,
+        avatar: true,
+        name: true,
+        email: true,
+        birthDate: true,
+        registeredAt: true,
       },
     },
+    // Controlled tutorial
+    state: {},
   });
 
-  console.log({ columnOrder });
+  const columnVisibilityCheckboxState = Object.entries(
+    table.getState().columnVisibility
+  )
+    .filter(([key, value]) => value)
+    .map(([key]) => key);
+
+  console.log("columnVisibilityCheckboxState", columnVisibilityCheckboxState);
 
   return (
     <Flex height="96vh" direction={"column"}>
+      <Box>
+        <Popover>
+          <PopoverTrigger>
+            <IconButton
+              aria-label="Show Column Visibility"
+              icon={<FaDiceFour />}
+              size="xs"
+              m={2}
+            />
+          </PopoverTrigger>
+          <PopoverContent>
+            <PopoverBody>
+              <CheckboxGroup
+                value={columnVisibilityCheckboxState}
+                colorScheme="green"
+                onChange={(selectedOptions) =>
+                  table.setColumnVisibility(
+                    columnIds.reduce((acc, val) => {
+                      acc[val] = selectedOptions.includes(val);
+                      return acc;
+                    }, {} as any)
+                  )
+                }
+              >
+                <RadioGroup
+                  onChange={(value) =>
+                    table.setColumnVisibility(
+                      columnIds.reduce((acc, val) => {
+                        acc[val] = value === "all";
+                        return acc;
+                      }, {} as any)
+                    )
+                  }
+                  mb={2}
+                  defaultValue="all"
+                >
+                  <Stack direction="row">
+                    <Radio value="all">Show All</Radio>
+                    <Radio value="none">Show None</Radio>
+                  </Stack>
+                </RadioGroup>
+                <Stack>
+                  <Checkbox value="id">Id</Checkbox>
+                  <Checkbox value="avatar">Avatar</Checkbox>
+                  <Checkbox value="name">name</Checkbox>
+                  <Checkbox value="email">Email</Checkbox>
+                  <Checkbox value="birthDate">Birth Date</Checkbox>
+                  <Checkbox value="registeredAt">Registered At</Checkbox>
+                </Stack>
+              </CheckboxGroup>
+            </PopoverBody>
+          </PopoverContent>
+        </Popover>
+      </Box>
       <Flex grow={1} overflow="auto">
         <table style={{ overflow: "auto" }}>
           <DragDropContext
@@ -148,12 +216,12 @@ export default function BasicTable() {
               console.log({ destination, source });
 
               const items = reorder(
-                columnOrder,
+                table.getState().columnOrder,
                 source.index,
                 destination.index
               );
 
-              setColumnOrder(items);
+              table.setColumnOrder(items);
             }}
           >
             <Droppable droppableId="header" direction="horizontal">
@@ -191,56 +259,65 @@ export default function BasicTable() {
                                   ),
                                 }}
                               >
-                                <IconButton
-                                  aria-label="Pin Column"
-                                  icon={<FaMapPin />}
-                                  onClick={() =>
-                                    header.column.pin(
-                                      header.column.getIsPinned() === "left"
-                                        ? false
-                                        : "left"
-                                    )
-                                  }
-                                  colorScheme={
-                                    header.column.getIsPinned() === "left"
-                                      ? "red"
-                                      : "whatsapp"
-                                  }
-                                  style={{
-                                    position: "absolute",
-                                    top: 14,
-                                    left: 4,
-                                  }}
-                                  size="xs"
-                                />
+                                <Menu>
+                                  <MenuButton
+                                    as={IconButton}
+                                    aria-label="Options"
+                                    icon={<FaEllipsisVertical />}
+                                    style={{
+                                      position: "absolute",
+                                      right: 4,
+                                      top: 10,
+                                      color: "black",
+                                    }}
+                                    color="teal"
+                                    variant="ghost"
+                                    size="xs"
+                                  />
+                                  <MenuList color="black">
+                                    {header.column.getIsPinned() !==
+                                      "right" && (
+                                      <MenuItem
+                                        onClick={() =>
+                                          header.column.pin("right")
+                                        }
+                                      >
+                                        Pin to Right
+                                      </MenuItem>
+                                    )}
+                                    {header.column.getIsPinned() !== "left" && (
+                                      <MenuItem
+                                        onClick={() =>
+                                          header.column.pin("left")
+                                        }
+                                      >
+                                        Pin to Left
+                                      </MenuItem>
+                                    )}
+                                    {header.column.getIsPinned() && (
+                                      <MenuItem
+                                        onClick={() => header.column.pin(false)}
+                                      >
+                                        Unpin
+                                      </MenuItem>
+                                    )}
+
+                                    <MenuItem
+                                      onClick={header.column.getToggleSortingHandler()}
+                                    >
+                                      {header.column.getIsSorted() === "desc"
+                                        ? "Sort Asc"
+                                        : "Sort Desc"}
+                                    </MenuItem>
+                                  </MenuList>
+                                </Menu>
+
                                 {header.isPlaceholder
                                   ? null
                                   : flexRender(
                                       header.column.columnDef.header,
                                       header.getContext()
                                     )}
-                                <IconButton
-                                  aria-label="Pin Column"
-                                  icon={<FaMapPin />}
-                                  onClick={() =>
-                                    header.column.pin(
-                                      header.column.getIsPinned() === "right"
-                                        ? false
-                                        : "right"
-                                    )
-                                  }
-                                  colorScheme={
-                                    header.column.getIsPinned() === "right"
-                                      ? "red"
-                                      : "whatsapp"
-                                  }
-                                  style={{
-                                    position: "absolute",
-                                    top: 14,
-                                    right: 4,
-                                  }}
-                                  size="xs"
-                                />
                               </th>
                             )}
                           </Draggable>
@@ -300,14 +377,14 @@ export default function BasicTable() {
           <IconButton
             aria-label="Prev Page"
             icon={<FaAngleLeft />}
-            onClick={() => table.setPageIndex(pageIndex - 1)}
+            onClick={() => table.previousPage()}
             disabled={!table.getCanPreviousPage()}
             size="xs"
           />
           <IconButton
             aria-label="Next Page"
             icon={<FaAngleRight />}
-            onClick={() => table.setPageIndex(pageIndex + 1)}
+            onClick={() => table.nextPage()}
             disabled={!table.getCanNextPage()}
             size="xs"
           />
