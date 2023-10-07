@@ -1,5 +1,11 @@
 import React, { useCallback, useMemo, useState } from "react";
 
+const allComments = [
+  { personId: 1, comment: "Comment 1" },
+  { personId: 2, comment: "Comment 2" },
+  { personId: 1, comment: "Comment 3" },
+];
+
 const Card = React.memo(
   ({
     onClick,
@@ -49,16 +55,18 @@ PreRequisties
 4. Dont, keep arrays and objects as is inside the component
 */
 
-// WIV (2)
-// const CARD_CONTENT = ["Comment 1", "Comment 2"];
-
 export default function Memoization() {
   const [count, setCount] = useState(0);
+  const [id] = useState(1);
 
+  const COMEMNT_LIMIT = 5;
   const comments = useMemo(() => ["Comment 1", "Comment 2"], []);
 
-  // WIV (3)
-  // const cardContentLength = comments?.length
+  const commentsById = useMemo(
+    () => allComments.map(({ personId }) => personId === id),
+    [id]
+  );
+
   const cardContentLength = useMemo(() => comments?.length, []);
 
   return (
