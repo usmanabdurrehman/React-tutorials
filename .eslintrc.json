@@ -1,0 +1,28 @@
+{
+    "env": {
+        "browser": true,
+        "es2021": true
+    },
+    "extends": [
+        "eslint:recommended",
+        "plugin:@typescript-eslint/recommended",
+        "plugin:react/recommended",
+        "plugin:react-hooks/recommended"
+    ],
+    "parser": "@typescript-eslint/parser",
+    "parserOptions": {
+        "ecmaVersion": "latest",
+        "sourceType": "module"
+    },
+    "plugins": [
+        "@typescript-eslint",
+        "react"
+    ],
+    "rules": {
+        "no-console": 1,
+        "max-lines": 1,
+        "react-hooks/rules-of-hooks": 1,
+        "react-hooks/exhaustive-deps": 1,
+        "@typescript-eslint/no-unused-vars": 1
+    }
+}
