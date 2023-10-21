@@ -1,20 +1,47 @@
-table {
-  /* border-collapse: collapse; */
+@import url("https://fonts.googleapis.com/css2?family=Open+Sans:wght@300&family=Roboto&display=swap");
 
-  font-size: 0.9em;
-  font-family: sans-serif;
-  min-width: 400px;
+:root {
+  --borderRadius: 10px;
 }
 
-table thead tr {
-  /* background-color: #009879;
-  color: #ffffff; */
-  /* text-align: left; */
+body {
+  font-family: "Roboto", sans-serif !important;
+}
+
+table {
+  border-collapse: collapse;
+
+  font-size: 0.9em;
+  min-width: 400px;
+  border-radius: var(--borderRadius);
+  box-shadow: 3px 3px 7px lightgray;
+}
+
+th:first-of-type {
+  border-top-left-radius: var(--borderRadius);
+}
+th:last-of-type {
+  border-top-right-radius: var(--borderRadius);
+}
+tr:last-of-type td:first-of-type {
+  border-bottom-left-radius: var(--borderRadius);
+}
+tr:last-of-type td:last-of-type {
+  border-bottom-right-radius: var(--borderRadius);
+}
+
+tr:last-of-type {
+  border: none;
+}
+
+table th {
+  background-color: black;
+  color: white;
 }
 
 table th,
 table td {
-  padding: 12px 15px;
+  padding: 12px 20px;
   text-align: center;
 }
 
@@ -26,6 +53,10 @@ table tbody tr:nth-of-type(even) {
   background-color: #f3f3f3;
 }
 
-table tbody tr:last-of-type {
-  border-bottom: 2px solid #009879;
+th .menu {
+  visibility: hidden;
+}
+
+th:hover .menu {
+  visibility: visible;
 }

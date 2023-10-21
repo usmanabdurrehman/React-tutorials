@@ -1,11 +1,17 @@
 import { useMemo, useState } from "react";
 
+/**
+ * TODO: Number Pagination, Delete Button at the end maybe, Search/Filter
+ */
+
 import {
   ColumnOrderState,
   ColumnPinningState,
   createColumnHelper,
+  FilterFn,
   flexRender,
   getCoreRowModel,
+  getFilteredRowModel,
   getPaginationRowModel,
   getSortedRowModel,
   PaginationState,
@@ -23,6 +29,7 @@ import {
   CheckboxGroup,
   Flex,
   IconButton,
+  Input,
   Menu,
   MenuButton,
   MenuItem,
@@ -47,21 +54,35 @@ import {
   FaPlus,
 } from "react-icons/fa6";
 import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
+import { rankItem } from "@tanstack/match-sorter-utils";
 
 const columnHelper = createColumnHelper<User>();
 
-const grid = 8;
+const getItemStyle = (isDragging: boolean, draggableStyle: any) => {
+  return {
+    // some basic styles to make the items look a bit nicer
+    userSelect: "none",
 
-const getItemStyle = (isDragging: boolean, draggableStyle: any) => ({
-  // some basic styles to make the items look a bit nicer
-  userSelect: "none",
+    // change background colour if dragging
+    background: isDragging ? "gray" : "black",
 
-  // change background colour if dragging
-  background: isDragging ? "lightgray" : "white",
+    // styles we need to apply on draggables
+    ...draggableStyle,
+  };
+};
 
-  // styles we need to apply on draggables
-  ...draggableStyle,
-});
+const fuzzyFilter: FilterFn<any> = (row, columnId, value, addMeta) => {
+  // Rank the item
+  const itemRank = rankItem(row.getValue(columnId), value);
+
+  // Store the itemRank info
+  addMeta({
+    itemRank,
+  });
+
+  // Return if the item should be filtered in/out
+  return itemRank.passed;
+};
 
 const reorder = (
   list: string[],
@@ -161,11 +182,18 @@ export default function BasicTable() {
     columns,
     enableRowSelection: true,
     getRowCanExpand: () => true,
+    filterFns: {
+      fuzzy: fuzzyFilter,
+    },
+    globalFilterFn: fuzzyFilter,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
     getSortedRowModel: getSortedRowModel(),
+    getFilteredRowModel: getFilteredRowModel(),
     initialState: {
       columnVisibility: {
+        selection: true,
+        expander: true,
         id: true,
         avatar: true,
         name: true,
@@ -174,6 +202,7 @@ export default function BasicTable() {
         registeredAt: true,
       },
       columnOrder: columnIds,
+      globalFilter: "",
     },
     // Controlled tutorial
     state: {},
@@ -185,7 +214,9 @@ export default function BasicTable() {
     .filter(([key, value]) => value)
     .map(([key]) => key);
 
-  console.log("columnOrder", table.getState().columnOrder);
+  const showTable = Object.values(table.getState().columnVisibility).filter(
+    (isVisible) => isVisible
+  ).length;
 
   return (
     <Flex height="96vh" direction={"column"}>
@@ -231,6 +262,8 @@ export default function BasicTable() {
                   </Stack>
                 </RadioGroup>
                 <Stack>
+                  <Checkbox value="selection">Selection</Checkbox>
+                  <Checkbox value="expander">Expander</Checkbox>
                   <Checkbox value="id">Id</Checkbox>
                   <Checkbox value="avatar">Avatar</Checkbox>
                   <Checkbox value="name">name</Checkbox>
@@ -242,196 +275,222 @@ export default function BasicTable() {
             </PopoverBody>
           </PopoverContent>
         </Popover>
+        <Input onChange={(e) => table.setGlobalFilter(e.target.value)} />
       </Box>
-      <Flex grow={1} overflow="auto">
-        <table style={{ overflow: "auto" }}>
-          <DragDropContext
-            onDragEnd={({ destination, source }) => {
-              if (!destination) {
-                return;
-              }
 
-              console.log({ destination, source });
+      <Flex grow={1} overflow="auto" pb={4} mt={4}>
+        {!!showTable && (
+          <table style={{ overflow: "auto" }}>
+            <DragDropContext
+              onDragEnd={({ destination, source }) => {
+                if (!destination) {
+                  return;
+                }
 
-              const items = reorder(
-                table.getState().columnOrder,
-                source.index,
-                destination.index
-              );
+                const items = reorder(
+                  table.getState().columnOrder,
+                  source.index,
+                  destination.index
+                );
 
-              table.setColumnOrder(items);
-            }}
-          >
-            <Droppable droppableId="header" direction="horizontal">
-              {/*@ts-ignore */}
-              {(provided) => (
-                <thead
-                  style={{ position: "sticky", top: 0 }}
-                  {...provided.droppableProps}
-                  ref={provided.innerRef}
-                >
-                  {table.getHeaderGroups().map((headerGroup, index) => (
-                    <tr key={headerGroup.id}>
-                      {headerGroup.headers.map((header, index) => {
-                        return (
-                          <Draggable
-                            draggableId={header.id}
-                            key={header.id}
-                            index={index}
-                            isDragDisabled={!!header.column.getIsPinned()}
-                          >
-                            {/*@ts-ignore */}
-                            {(provided, snapshot) => (
-                              <th
-                                ref={provided.innerRef}
-                                {...provided.draggableProps}
-                                {...provided.dragHandleProps}
-                                key={header.id}
-                                colSpan={header.colSpan}
-                                style={{
-                                  width: header.getSize(),
-                                  position: "relative",
-                                  ...getItemStyle(
-                                    snapshot.isDragging,
-                                    provided.draggableProps.style
-                                  ),
-                                }}
-                              >
-                                <Menu>
-                                  <MenuButton
-                                    as={IconButton}
-                                    aria-label="Options"
-                                    icon={<FaEllipsisVertical />}
-                                    style={{
-                                      position: "absolute",
-                                      right: 4,
-                                      top: 10,
-                                      color: "black",
-                                    }}
-                                    color="teal"
-                                    variant="ghost"
-                                    size="xs"
-                                  />
-                                  <MenuList color="black">
-                                    {header.column.getIsPinned() !==
-                                      "right" && (
+                table.setColumnOrder(items);
+              }}
+            >
+              <thead style={{ position: "sticky", top: 0 }}>
+                {table.getHeaderGroups().map((headerGroup, index) => (
+                  <Droppable
+                    droppableId="header"
+                    direction="horizontal"
+                    type="column"
+                  >
+                    {/*@ts-ignore */}
+                    {(provided) => (
+                      <tr
+                        key={headerGroup.id}
+                        {...provided.droppableProps}
+                        ref={provided.innerRef}
+                        // style={{ display: "flex" }}
+                      >
+                        {headerGroup.headers.map((header, index) => {
+                          return (
+                            <Draggable
+                              draggableId={header.id}
+                              key={header.id}
+                              index={index}
+                              isDragDisabled={!!header.column.getIsPinned()}
+                            >
+                              {/*@ts-ignore */}
+                              {(provided, snapshot) => (
+                                <th
+                                  ref={provided.innerRef}
+                                  {...provided.draggableProps}
+                                  {...provided.dragHandleProps}
+                                  key={header.id}
+                                  colSpan={header.colSpan}
+                                  style={{
+                                    width: header.getSize(),
+                                    position: "relative",
+                                    ...getItemStyle(
+                                      snapshot.isDragging,
+                                      provided.draggableProps.style
+                                    ),
+                                  }}
+                                >
+                                  <Menu>
+                                    <MenuButton
+                                      as={IconButton}
+                                      aria-label="Options"
+                                      icon={<FaEllipsisVertical />}
+                                      style={{
+                                        position: "absolute",
+                                        right: 4,
+                                        top: 10,
+                                        color: "black",
+                                      }}
+                                      className="menu"
+                                      size="xs"
+                                      colorScheme={"whiteAlpha"}
+                                      // variant={"outline"}
+                                    />
+                                    <MenuList color="black">
+                                      {header.column.getIsPinned() !==
+                                        "right" && (
+                                        <MenuItem
+                                          onClick={() =>
+                                            header.column.pin("right")
+                                          }
+                                        >
+                                          Pin to Right
+                                        </MenuItem>
+                                      )}
+                                      {header.column.getIsPinned() !==
+                                        "left" && (
+                                        <MenuItem
+                                          onClick={() =>
+                                            header.column.pin("left")
+                                          }
+                                        >
+                                          Pin to Left
+                                        </MenuItem>
+                                      )}
+                                      {header.column.getIsPinned() && (
+                                        <MenuItem
+                                          onClick={() =>
+                                            header.column.pin(false)
+                                          }
+                                        >
+                                          Unpin
+                                        </MenuItem>
+                                      )}
+
                                       <MenuItem
-                                        onClick={() =>
-                                          header.column.pin("right")
-                                        }
+                                        onClick={header.column.getToggleSortingHandler()}
                                       >
-                                        Pin to Right
+                                        {header.column.getIsSorted() === "desc"
+                                          ? "Sort Asc"
+                                          : "Sort Desc"}
                                       </MenuItem>
-                                    )}
-                                    {header.column.getIsPinned() !== "left" && (
-                                      <MenuItem
-                                        onClick={() =>
-                                          header.column.pin("left")
-                                        }
-                                      >
-                                        Pin to Left
-                                      </MenuItem>
-                                    )}
-                                    {header.column.getIsPinned() && (
-                                      <MenuItem
-                                        onClick={() => header.column.pin(false)}
-                                      >
-                                        Unpin
-                                      </MenuItem>
-                                    )}
-
-                                    <MenuItem
-                                      onClick={header.column.getToggleSortingHandler()}
-                                    >
-                                      {header.column.getIsSorted() === "desc"
-                                        ? "Sort Asc"
-                                        : "Sort Desc"}
-                                    </MenuItem>
-                                  </MenuList>
-                                </Menu>
-
-                                {header.isPlaceholder
-                                  ? null
-                                  : flexRender(
-                                      header.column.columnDef.header,
-                                      header.getContext()
-                                    )}
-                              </th>
-                            )}
-                          </Draggable>
-                        );
-                      })}
-                    </tr>
-                  ))}
-                  {provided.placeholder}
-                </thead>
-              )}
-            </Droppable>
-          </DragDropContext>
-
-          <tbody>
-            {table.getRowModel().rows.map((row) => (
-              <>
-                <tr key={row.id} style={{ width: "100%" }}>
-                  {row.getVisibleCells().map((cell) => {
-                    return (
-                      <td key={cell.id}>
-                        {flexRender(
-                          cell.column.columnDef.cell,
-                          cell.getContext()
-                        )}
-                      </td>
-                    );
-                  })}
-                </tr>
-                <tr>
-                  {row.getIsExpanded() && (
-                    <td colSpan={row.getVisibleCells().length}>
-                      <Flex height={150} gap={4} p={2}>
-                        <Flex width={150}>
-                          <img
-                            src={row.original.avatar}
-                            height="100%"
-                            width="100%"
-                          />
-                        </Flex>
-                        <Box width="50%">
-                          <p>Name: {row.original.name}</p>
-                          <p>Email: {row.original.email}</p>
-                          <p>
-                            DOB:{" "}
-                            {moment(row.original.birthDate).format(
-                              "MM/DD/YYYY"
-                            )}
-                          </p>
-                        </Box>
-                      </Flex>
-                    </td>
-                  )}
-                </tr>
-              </>
-            ))}
-          </tbody>
-          <tfoot>
-            {table.getFooterGroups().map((footerGroup) => (
-              <tr key={footerGroup.id}>
-                {footerGroup.headers.map((header) => (
-                  <td key={header.id} colSpan={header.colSpan}>
-                    {header.isPlaceholder
-                      ? null
-                      : flexRender(
-                          header.column.columnDef.footer,
-                          header.getContext()
-                        )}
-                  </td>
+                                    </MenuList>
+                                  </Menu>
+                                  {header.isPlaceholder
+                                    ? null
+                                    : flexRender(
+                                        header.column.columnDef.header,
+                                        header.getContext()
+                                      )}
+                                </th>
+                              )}
+                            </Draggable>
+                          );
+                        })}
+                        {provided.placeholder}
+                      </tr>
+                    )}
+                  </Droppable>
                 ))}
-              </tr>
-            ))}
-          </tfoot>
-        </table>
+              </thead>
+            </DragDropContext>
+
+            <tbody>
+              {table.getRowModel().rows.map((row) => (
+                <>
+                  <tr
+                    key={row.id}
+                    style={{
+                      width: "100%",
+                      background: row.getIsSelected() ? "#161654" : "white",
+                      color: row.getIsSelected() ? "white" : "black",
+                    }}
+                  >
+                    {row.getVisibleCells().map((cell) => {
+                      return (
+                        <td key={cell.id}>
+                          {flexRender(
+                            cell.column.columnDef.cell,
+                            cell.getContext()
+                          )}
+                        </td>
+                      );
+                    })}
+                  </tr>
+
+                  {row.getIsExpanded() && (
+                    <tr>
+                      <td colSpan={row.getVisibleCells().length}>
+                        <Flex height={150} gap={4} p={2}>
+                          <Flex width={150}>
+                            <img
+                              src={row.original.avatar}
+                              height="100%"
+                              width="100%"
+                            />
+                          </Flex>
+                          <Box
+                            width="50%"
+                            textAlign={"left"}
+                            alignSelf="center"
+                          >
+                            <p>Name: {row.original.name}</p>
+                            <p>Email: {row.original.email}</p>
+                            <p>
+                              DOB:{" "}
+                              {moment(row.original.birthDate).format(
+                                "MM/DD/YYYY"
+                              )}
+                            </p>
+                          </Box>
+                        </Flex>
+                      </td>
+                    </tr>
+                  )}
+                </>
+              ))}
+            </tbody>
+
+            {false && (
+              <tfoot>
+                {table.getFooterGroups().map((footerGroup) => (
+                  <tr key={footerGroup.id}>
+                    {footerGroup.headers.map((header) => (
+                      <td key={header.id} colSpan={header.colSpan}>
+                        {header.isPlaceholder
+                          ? null
+                          : flexRender(
+                              header.column.columnDef.footer,
+                              header.getContext()
+                            )}
+                      </td>
+                    ))}
+                  </tr>
+                ))}
+              </tfoot>
+            )}
+          </table>
+        )}
       </Flex>
-      <Box>
-        <Flex gap={2} mt={4}>
+
+      <Box mt={4}>
+        <Flex gap={2}>
           <IconButton
             aria-label="First Page"
             icon={<FaAnglesLeft />}

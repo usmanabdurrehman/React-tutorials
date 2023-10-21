@@ -1,0 +1,52 @@
+<Menu>
+                                  <MenuButton
+                                    as={IconButton}
+                                    aria-label="Options"
+                                    icon={<FaEllipsisVertical />}
+                                    style={{
+                                      position: "absolute",
+                                      right: 4,
+                                      top: 10,
+                                      color: "black",
+                                    }}
+                                    color="teal"
+                                    variant="ghost"
+                                    size="xs"
+                                  />
+                                  <MenuList color="black">
+                                    {header.column.getIsPinned() !==
+                                      "right" && (
+                                      <MenuItem
+                                        onClick={() =>
+                                          header.column.pin("right")
+                                        }
+                                      >
+                                        Pin to Right
+                                      </MenuItem>
+                                    )}
+                                    {header.column.getIsPinned() !== "left" && (
+                                      <MenuItem
+                                        onClick={() =>
+                                          header.column.pin("left")
+                                        }
+                                      >
+                                        Pin to Left
+                                      </MenuItem>
+                                    )}
+                                    {header.column.getIsPinned() && (
+                                      <MenuItem
+                                        onClick={() => header.column.pin(false)}
+                                      >
+                                        Unpin
+                                      </MenuItem>
+                                    )}
+
+                                    <MenuItem
+                                      onClick={header.column.getToggleSortingHandler()}
+                                    >
+                                      {header.column.getIsSorted() === "desc"
+                                        ? "Sort Asc"
+                                        : "Sort Desc"}
+                                    </MenuItem>
+                                  </MenuList>
+                                </Menu>
