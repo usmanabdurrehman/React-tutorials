@@ -1,46 +1,51 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
+import { useState } from "react";
+import { User } from "../types";
 
 export const NewOptimistic = () => {
-  const { data } = useQuery({
+  const [name, setName] = useState("");
+  const { data: users = [] } = useQuery({
     queryKey: ["GET_USERS"],
-    queryFn: async () => {
-      const { data } = await axios.get(
-        "https://jsonplaceholder.typicode.com/users"
-      );
+    queryFn: async (): Promise<User[]> => {
+      const { data } = await axios.get("http://localhost:7000/users");
       return data;
     },
   });
-  const queryClient = useQueryClient();
 
+  const queryClient = useQueryClient();
   const { mutate, isPending, variables } = useMutation({
     mutationFn: (newUser: string) =>
-      axios.post("https://jsonplaceholder.typicode.com/users", {
+      axios.post("http://localhost:7000/users", {
         name: newUser,
       }),
-    onSettled: (data) =>
-      queryClient.setQueryData(["GET_USERS"], (users: any[] | undefined) => [
-        ...(users || []),
-        data?.data,
-      ]),
+    onSettled: async () =>
+      await queryClient.invalidateQueries({ queryKey: ["GET_USERS"] }),
   });
 
   return (
     <div style={{ margin: 20 }}>
       <ul>
-        {data?.map((user: any) => (
+        {users?.map((user: any) => (
           <li key={user.id}>{user.name}</li>
         ))}
         {isPending && (
           <li style={{ opacity: isPending ? 0.5 : 1 }}>{variables}</li>
         )}
       </ul>
-      <button
-        onClick={() => mutate("David Beckham")}
-        style={{ marginLeft: 15 }}
-      >
-        Add User
-      </button>
+      <div style={{ marginLeft: 15 }}>
+        <input
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          placeholder="Add User Name"
+          onKeyDown={(e) => {
+            if (e.code === "Enter") {
+              setName("");
+              mutate(name);
+            }
+          }}
+        />
+      </div>
     </div>
   );
 };
