@@ -1,5 +1,7 @@
-import { QueryClient, QueryClientProvider } from "react-query";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ChakraProvider } from "@chakra-ui/react";
+import { broadcastQueryClient } from "@tanstack/query-broadcast-client-experimental";
+import Todos from "./Components/Todos/Todos";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -12,11 +14,15 @@ const queryClient = new QueryClient({
   },
 });
 
+broadcastQueryClient({
+  queryClient,
+});
+
 export default function App() {
   return (
     <ChakraProvider>
       <QueryClientProvider client={queryClient}>
-        {/* Tutorial Code Here */}
+        <Todos />
       </QueryClientProvider>
     </ChakraProvider>
   );
