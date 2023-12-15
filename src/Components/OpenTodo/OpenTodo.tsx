@@ -73,7 +73,9 @@ export default function OpenTodo() {
         ))}
       </Flex>
       <Box flex="1">
-        {currentTodo && <TodoForm todo={currentTodo} onSave={onSave} />}
+        {currentTodo && (
+          <TodoForm key={currentTodo.id} todo={currentTodo} onSave={onSave} />
+        )}
       </Box>
     </Flex>
   );
