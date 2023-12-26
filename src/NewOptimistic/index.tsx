@@ -14,6 +14,7 @@ export const NewOptimistic = () => {
   });
 
   const queryClient = useQueryClient();
+
   const { mutate, isPending, variables } = useMutation({
     mutationFn: (newUser: string) =>
       axios.post("http://localhost:7000/users", {
@@ -29,10 +30,9 @@ export const NewOptimistic = () => {
         {users?.map((user: any) => (
           <li key={user.id}>{user.name}</li>
         ))}
-        {isPending && (
-          <li style={{ opacity: isPending ? 0.5 : 1 }}>{variables}</li>
-        )}
+        {isPending && <li>{variables}</li>}
       </ul>
+
       <div style={{ marginLeft: 15 }}>
         <input
           value={name}

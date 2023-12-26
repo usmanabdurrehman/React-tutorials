@@ -18,13 +18,13 @@ const initialUsers = [
   },
 ];
 
-let users: User[] = initialUsers;
+let users: User[] = [...initialUsers];
 
 app.use(cors({ credentials: true, origin: true }));
 app.use(express.json());
 
 app.get("/initial", (req, res) => {
-  users = initialUsers;
+  users = [...initialUsers];
   res.send(users);
 });
 
