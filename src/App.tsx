@@ -1,23 +1,14 @@
-import { QueryClient, QueryClientProvider } from "react-query";
 import { ChakraProvider } from "@chakra-ui/react";
-
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      refetchOnMount: false,
-      refetchOnWindowFocus: false,
-      refetchOnReconnect: false,
-      retry: 0,
-    },
-  },
-});
+import { Count } from "./Components/Count";
+import { Todos } from "./Components/Todos";
+import { UserForm } from "./Components/UserForm";
 
 export default function App() {
   return (
     <ChakraProvider>
-      <QueryClientProvider client={queryClient}>
-        {/* Tutorial Code Here */}
-      </QueryClientProvider>
+      <Count />
+      {/* <UserForm />
+      <Todos /> */}
     </ChakraProvider>
   );
 }
