@@ -30,6 +30,8 @@ import { Download, Upload, XLg } from "react-bootstrap-icons";
 
 interface PaintProps {}
 
+const SIZE = 500;
+
 const downloadURI = (uri: string | undefined, name: string) => {
   const link = document.createElement("a");
   link.download = name;
@@ -39,60 +41,37 @@ const downloadURI = (uri: string | undefined, name: string) => {
   document.body.removeChild(link);
 };
 
-const SIZE = 500;
+export const PaintDemo: React.FC<PaintProps> = React.memo(function Paint({}) {
+  const currentShapeRef = useRef<string>();
+  const isPaintRef = useRef(false);
+  const stageRef = useRef<any>(null);
 
-export const Paint: React.FC<PaintProps> = React.memo(function Paint({}) {
-  const [color, setColor] = useState("#000");
-  const [drawAction, setDrawAction] = useState<DrawAction>(DrawAction.Select);
+  const transformerRef = useRef<any>(null);
+
   const [scribbles, setScribbles] = useState<Scribble[]>([]);
   const [rectangles, setRectangles] = useState<Rectangle[]>([]);
   const [circles, setCircles] = useState<Circle[]>([]);
   const [arrows, setArrows] = useState<Arrow[]>([]);
   const [image, setImage] = useState<HTMLImageElement>();
 
-  const onImportImageSelect = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
-      if (e.target.files?.[0]) {
-        const imageUrl = URL.createObjectURL(e.target.files?.[0]);
-        const image = new Image(SIZE / 2, SIZE / 2);
-        image.src = imageUrl;
-        setImage(image);
-      }
-      e.target.files = null;
-    },
-    []
-  );
+  const [color, setColor] = useState("#000");
+  const [drawAction, setDrawAction] = useState<DrawAction>(DrawAction.Scribble);
 
-  const fileRef = useRef<HTMLInputElement>(null);
-  const onImportImageClick = useCallback(() => {
-    fileRef?.current && fileRef?.current?.click();
+  const checkDeselect = useCallback((e: KonvaEventObject<MouseEvent>) => {
+    const clickedOnEmpty = e.target === stageRef?.current?.find("#bg")?.[0];
+    if (clickedOnEmpty) {
+      transformerRef?.current?.nodes([]);
+    }
   }, []);
-
-  const stageRef = useRef<any>(null);
-
-  const onExportClick = useCallback(() => {
-    const dataUri = stageRef?.current?.toDataURL({ pixelRatio: 3 });
-    downloadURI(dataUri, "image.png");
-  }, []);
-
-  const onClear = useCallback(() => {
-    setRectangles([]);
-    setCircles([]);
-    setScribbles([]);
-    setArrows([]);
-    setImage(undefined);
-  }, []);
-
-  const isPaintRef = useRef(false);
 
   const onStageMouseUp = useCallback(() => {
     isPaintRef.current = false;
   }, []);
 
-  const currentShapeRef = useRef<string>();
-
   const onStageMouseDown = useCallback(
     (e: KonvaEventObject<MouseEvent>) => {
+      checkDeselect(e);
+
       if (drawAction === DrawAction.Select) return;
       isPaintRef.current = true;
       const stage = stageRef?.current;
@@ -154,7 +133,7 @@ export const Paint: React.FC<PaintProps> = React.memo(function Paint({}) {
         }
       }
     },
-    [drawAction, color]
+    [checkDeselect, drawAction, color]
   );
 
   const onStageMouseMove = useCallback(() => {
@@ -224,7 +203,7 @@ export const Paint: React.FC<PaintProps> = React.memo(function Paint({}) {
     }
   }, [drawAction]);
 
-  const transformerRef = useRef<any>(null);
+  const diagramRef = useRef<any>(null);
 
   const onShapeClick = useCallback(
     (e: KonvaEventObject<MouseEvent>) => {
@@ -237,12 +216,37 @@ export const Paint: React.FC<PaintProps> = React.memo(function Paint({}) {
 
   const isDraggable = drawAction === DrawAction.Select;
 
-  const onBgClick = useCallback(
-    (e: KonvaEventObject<MouseEvent>) => {
-      transformerRef?.current?.nodes([]);
+  const onImportImageSelect = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      if (e.target.files?.[0]) {
+        const imageURL = URL.createObjectURL(e.target.files[0]);
+        const image = new Image(SIZE / 2, SIZE / 2);
+        image.src = imageURL;
+        setImage(image);
+      }
+      e.target.files = null;
     },
-    [drawAction]
+    []
   );
+
+  const fileRef = useRef<HTMLInputElement>(null);
+
+  const onImportImageClick = useCallback(() => {
+    fileRef?.current && fileRef?.current?.click();
+  }, []);
+
+  const onExportClick = useCallback(() => {
+    const dataURL = stageRef?.current?.toDataURL({ pixelRatio: 3 });
+    downloadURI(dataURL, "image.png");
+  }, []);
+
+  const onClear = useCallback(() => {
+    setRectangles([]);
+    setCircles([]);
+    setArrows([]);
+    setScribbles([]);
+    setImage(undefined);
+  }, []);
 
   return (
     <Box m={4} width={`${SIZE}px`}>
@@ -286,7 +290,6 @@ export const Paint: React.FC<PaintProps> = React.memo(function Paint({}) {
             ref={fileRef}
             onChange={onImportImageSelect}
             style={{ display: "none" }}
-            accept="image/*"
           />
           <Button
             leftIcon={<Upload />}
@@ -331,45 +334,34 @@ export const Paint: React.FC<PaintProps> = React.memo(function Paint({}) {
               width={SIZE}
               fill="white"
               id="bg"
-              onClick={onBgClick}
             />
             {image && (
               <KonvaImage
+                ref={diagramRef}
                 image={image}
                 x={0}
                 y={0}
                 height={SIZE / 2}
                 width={SIZE / 2}
-                draggable={isDraggable}
-              />
-            )}
-            {arrows.map((arrow) => (
-              <KonvaArrow
-                key={arrow.id}
-                id={arrow.id}
-                points={arrow.points}
-                fill={arrow.color}
-                stroke={arrow.color}
-                strokeWidth={4}
                 onClick={onShapeClick}
                 draggable={isDraggable}
               />
-            ))}
-            {rectangles.map((rectangle) => (
+            )}
+            {rectangles?.map((rectangle, index) => (
               <KonvaRect
                 key={rectangle.id}
                 x={rectangle?.x}
                 y={rectangle?.y}
+                onClick={onShapeClick}
                 height={rectangle?.height}
                 width={rectangle?.width}
                 stroke={rectangle?.color}
                 id={rectangle?.id}
                 strokeWidth={4}
-                onClick={onShapeClick}
                 draggable={isDraggable}
               />
             ))}
-            {circles.map((circle) => (
+            {circles?.map((circle) => (
               <KonvaCircle
                 key={circle.id}
                 id={circle.id}
@@ -378,8 +370,8 @@ export const Paint: React.FC<PaintProps> = React.memo(function Paint({}) {
                 radius={circle?.radius}
                 stroke={circle?.color}
                 strokeWidth={4}
-                onClick={onShapeClick}
                 draggable={isDraggable}
+                onClick={onShapeClick}
               />
             ))}
             {scribbles.map((scribble) => (
@@ -391,6 +383,19 @@ export const Paint: React.FC<PaintProps> = React.memo(function Paint({}) {
                 stroke={scribble?.color}
                 strokeWidth={4}
                 points={scribble.points}
+                name={DrawAction.Scribble}
+                onClick={onShapeClick}
+                draggable={isDraggable}
+              />
+            ))}
+            {arrows.map((arrow) => (
+              <KonvaArrow
+                key={arrow.id}
+                id={arrow.id}
+                points={arrow.points}
+                fill={arrow.color}
+                stroke={arrow.color}
+                strokeWidth={4}
                 onClick={onShapeClick}
                 draggable={isDraggable}
               />
