@@ -20,7 +20,9 @@ export function StatusForm() {
 }
 
 const Form = () => {
-  const { pending: isLoading } = useFormStatus();
+  const data = useFormStatus();
+
+  const { pending: isLoading } = data;
 
   return (
     <Box m={4} width={300}>

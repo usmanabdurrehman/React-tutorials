@@ -1,4 +1,3 @@
-// @ts-ignore
 import { use } from "react";
 
 const getCards = fetch("http://localhost:7000/cards").then((res) => res.json());

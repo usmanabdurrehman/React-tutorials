@@ -1,6 +1,6 @@
 import express from "express";
 import cors from "cors";
-export const timeout = (numSeconds: number) =>
+export const timeout = (numSeconds) =>
   new Promise((resolve, reject) => setTimeout(resolve, numSeconds));
 
 const app = express();

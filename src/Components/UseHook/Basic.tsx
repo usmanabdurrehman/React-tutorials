@@ -1,4 +1,3 @@
-// @ts-ignore
 import { useEffect, useState } from "react";
 import { Error, Loader } from "../Misc";
 import { User } from "../../types";
