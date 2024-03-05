@@ -1,5 +1,6 @@
 import { QueryClient, QueryClientProvider } from "react-query";
 import { ChakraProvider } from "@chakra-ui/react";
+import SocialCard from "./Components/LargeComponents/SocialCard";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -16,7 +17,7 @@ export default function App() {
   return (
     <ChakraProvider>
       <QueryClientProvider client={queryClient}>
-        {/* Tutorial Code Here */}
+        <SocialCard />
       </QueryClientProvider>
     </ChakraProvider>
   );
