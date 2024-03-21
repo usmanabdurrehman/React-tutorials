@@ -1,0 +1,11 @@
+body {
+  padding: 10px;
+}
+
+.box {
+  width: 200px;
+  margin: 10px 0;
+  padding: 10px;
+  border-radius: 12px;
+  box-shadow: 3px 3px 7px lightgray;
+}
