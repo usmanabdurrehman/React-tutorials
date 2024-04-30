@@ -13,6 +13,16 @@ export enum DrawAction {
   Circle = "circle",
   Scribble = "freedraw",
   Arrow = "arrow",
+  Undo = "Undo",
+  Redo = "Redo",
+  Clear = "Clear",
+}
+
+export enum CanvasAction {
+  Add = "add",
+  Delete = "delete",
+  Resize = "resize",
+  Drag = "drag",
 }
 
 export const PAINT_OPTIONS = [

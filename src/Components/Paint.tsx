@@ -12,7 +12,7 @@ import {
 } from "react-konva";
 import { v4 as uuidv4 } from "uuid";
 import { Arrow, Circle, Rectangle, Scribble } from "./Paint.types";
-import { DrawAction, PAINT_OPTIONS } from "./Paint.constants";
+import { CanvasAction, DrawAction, PAINT_OPTIONS } from "./Paint.constants";
 import { SketchPicker } from "react-color";
 import {
   Box,
@@ -243,6 +243,129 @@ export const Paint: React.FC<PaintProps> = React.memo(function Paint({}) {
     },
     [drawAction]
   );
+
+  const getSetterByType = useCallback((type: DrawAction | undefined) => {
+    let setter: React.Dispatch<React.SetStateAction<any[]>> | undefined;
+    switch (type) {
+      case DrawAction.Rectangle:
+        setter = setRectangles;
+        break;
+      case DrawAction.Circle:
+        setter = setCircles;
+        break;
+      case DrawAction.Arrow:
+        setter = setArrows;
+        break;
+      case DrawAction.Scribble:
+        setter = setScribbles;
+        break;
+      case DrawAction.Text:
+        setter = setTexts;
+        break;
+    }
+    return setter;
+  }, []);
+
+  const getRecordsByType = useCallback(
+    (type: DrawAction | undefined) => {
+      let records: any[] | undefined;
+      switch (type) {
+        case DrawAction.Rectangle:
+          records = rectangles;
+          break;
+        case DrawAction.Circle:
+          records = circles;
+          break;
+        case DrawAction.Arrow:
+          records = arrows;
+          break;
+        case DrawAction.Scribble:
+          records = scribbles;
+          break;
+        case DrawAction.Text:
+          records = texts;
+          break;
+      }
+      return records;
+    },
+    [arrows, circles, rectangles, scribbles]
+  );
+
+  const onTransformShapeStart = useCallback(
+    (e: KonvaEventObject<MouseEvent>) => {
+      setCanvasHistory((prevCanvasHistory) => [
+        ...prevCanvasHistory,
+        {
+          type: CanvasAction.Resize,
+          drawAction: e.target.attrs.name,
+          payload: {
+            id: e.target.attrs.id,
+            scaleX: e.target.attrs.scaleX,
+            scaleY: e.target.attrs.scaleY,
+          },
+        },
+      ]);
+    },
+    []
+  );
+
+  const onDragShapeStart = useCallback((e: KonvaEventObject<MouseEvent>) => {
+    setCanvasHistory((prevCanvasHistory) => [
+      ...prevCanvasHistory,
+      {
+        type: CanvasAction.Drag,
+        drawAction: e.target.attrs.name,
+        payload: {
+          id: e.target.attrs.id,
+          x: e.target.attrs.x,
+          y: e.target.attrs.y,
+        },
+      },
+    ]);
+  }, []);
+
+  const onUndoClick = useCallback(() => {
+    const canvasHistoryPayload = [...canvasHistory];
+    const lastAction = canvasHistoryPayload.pop();
+    setCanvasHistory(canvasHistoryPayload);
+
+    const setter = getSetterByType(lastAction?.drawAction);
+    const id = lastAction?.payload?.id;
+    if (!setter) return;
+    switch (lastAction?.type) {
+      case CanvasAction.Add: {
+        transformerRef?.current?.nodes([]);
+        setter((prevRecords) =>
+          prevRecords.filter((prevRecord) => prevRecord.id !== id)
+        );
+        break;
+      }
+      case CanvasAction.Delete: {
+        setter((prevRecords) => [...prevRecords, lastAction?.payload?.record]);
+        break;
+      }
+      case CanvasAction.Resize: {
+        setter((prevRecords) =>
+          prevRecords.map((prevRecord) =>
+            prevRecord.id === id
+              ? { ...prevRecord, ...lastAction?.payload }
+              : prevRecord
+          )
+        );
+        break;
+      }
+      case CanvasAction.Drag: {
+        setter((prevRecords) =>
+          prevRecords.map((prevRecord) =>
+            prevRecord.id === id
+              ? { ...prevRecord, ...lastAction?.payload }
+              : prevRecord
+          )
+        );
+        break;
+      }
+    }
+  }, [canvasHistory, getSetterByType]);
 
   return (
     <Box m={4} width={`${SIZE}px`}>
