@@ -1,0 +1,13 @@
+.fadeIn {
+  opacity: 1;
+  transform: translateY(0px);
+}
+
+.fadeOut {
+  opacity: 0;
+  transform: translateY(-10px);
+}
+
+.pikachu {
+  transition: 1s;
+}
