@@ -10,7 +10,7 @@ const getPosts = queryOptions({
 });
 
 const getPostById = queryOptions({
-  queryKey: ["posts", 1],
+  queryKey: ["post", 1],
   queryFn: fetchData("posts/1"),
 });
 
@@ -19,7 +19,7 @@ const getPostsByFilter = queryOptions({
   queryFn: fetchData("posts?active=true"),
 });
 
-export const Keys = () => {
+export const KeysHiearchy = () => {
   useQuery(getPosts);
   useQuery(getPostById);
   useQuery(getPostsByFilter);

@@ -1,7 +1,6 @@
 import { Button } from "@chakra-ui/react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { getPosts } from "../queries/getPosts";
-import { Post } from "../types";
 
 export const CacheUpdate = () => {
   const { mutateAsync: createPost } = useMutation({
@@ -15,10 +14,8 @@ export const CacheUpdate = () => {
   const queryClient = useQueryClient();
 
   const onSubmit = async () => {
-    const post: Post = await createPost({ text: "Post 1" });
-    queryClient.setQueryData(getPosts.queryKey, (data?: Post[]) => {
-      return [...(data || []), post] as Post[];
-    });
+    await createPost({ text: "Post 1" });
+    queryClient.invalidateQueries(getPosts);
   };
 
   return <Button onClick={onSubmit}>Submit</Button>;
