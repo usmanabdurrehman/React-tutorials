@@ -7,11 +7,7 @@ import {
   List,
   ListItem,
 } from "@chakra-ui/react";
-import {
-  experimental_useOptimistic as useOptimistic,
-  useRef,
-  useState,
-} from "react";
+import { useOptimistic, useRef, useState } from "react";
 import { Todo } from "../../types";
 import { addTodo } from "../../utilities";
 
