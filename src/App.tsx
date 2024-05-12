@@ -1,6 +1,6 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ChakraProvider } from "@chakra-ui/react";
-import { Keys } from "./TanstackQueryTips/KeysHierarchy";
+import { KeysHiearchy } from "./TanstackQueryTips/KeysHierarchy";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -17,7 +17,7 @@ export default function App() {
   return (
     <ChakraProvider>
       <QueryClientProvider client={queryClient}>
-        <Keys />
+        <KeysHiearchy />
       </QueryClientProvider>
     </ChakraProvider>
   );
