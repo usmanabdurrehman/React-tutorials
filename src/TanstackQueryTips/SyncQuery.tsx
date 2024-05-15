@@ -10,18 +10,10 @@ const getPosts = queryOptions({
 });
 
 export const SyncQuery = () => {
-  const { data: posts, refetch } = useQuery(getPosts);
-
-  useEffect(() => {
-    // Post Logic
-  }, [posts]);
-
   const queryClient = useQueryClient();
 
   const onSubmit = () => {
     const posts = queryClient.ensureQueryData(getPosts);
-    // Post Logic
-    refetch();
   };
 
   return <Button onClick={onSubmit}>Submit</Button>;
