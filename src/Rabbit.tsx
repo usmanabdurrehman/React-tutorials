@@ -67,7 +67,7 @@ export default function Rabbit() {
           >
             <Img
               src="/pikachu.png"
-              width="140px"
+              width="180px"
               className={`pikachu ${showPikachu ? "fadeIn" : "fadeOut"}`}
             />
           </Flex>
