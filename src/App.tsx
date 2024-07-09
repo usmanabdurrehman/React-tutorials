@@ -1,5 +1,7 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { ChakraProvider } from "@chakra-ui/react";
+import { Box, ChakraProvider } from "@chakra-ui/react";
+import List from "./List/List";
+import "./index.css";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -16,7 +18,9 @@ export default function App() {
   return (
     <ChakraProvider>
       <QueryClientProvider client={queryClient}>
-        {/* Tutorial Code Here */}
+        <Box p={4}>
+          <List />
+        </Box>
       </QueryClientProvider>
     </ChakraProvider>
   );
