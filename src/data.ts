@@ -1,7 +1,7 @@
 import { faker } from "@faker-js/faker";
 faker.seed(123);
 
-export const users = Array.from({ length: 5 }, (_, i) => i).map((i) => {
+export const users = Array.from({ length: 6 }, (_, i) => i).map((i) => {
   return {
     id: i,
     name: faker.person.fullName(),
