@@ -1,28 +1,26 @@
 import React, { useMemo, useState } from "react";
-import { Flipper, Flipped, spring } from "react-flip-toolkit";
 import { Box, Button, ButtonGroup, Flex } from "@chakra-ui/react";
 import { users as initialUsers } from "../data";
 import Card from "./Card";
 import { Sort } from "../types";
+import { Flipped, Flipper, spring } from "react-flip-toolkit";
 
-const onExit = (el: HTMLElement, index: number, removeElement: () => void) => {
+const onExit = (
+  element: HTMLElement,
+  index: number,
+  removeElement: () => void
+) => {
   spring({
     onUpdate: (val) => {
-      el.style.opacity = `${1 - (val as number)}`;
+      element.style.opacity = `${1 - (val as number)}`;
     },
     onComplete: removeElement,
   });
 };
 
-const getCardId = (id: number) => `card-${id}`;
-
 export default function List() {
   const [sort, setSort] = useState<Sort>("asc");
   const [users, setUsers] = useState(initialUsers);
-
-  const userIds = useMemo(() => users.map((user) => user.id), [users]);
-
-  const flipKey = `${userIds.join(",")} ${sort}`;
 
   const sortedUsers = useMemo(
     () =>
@@ -35,6 +33,8 @@ export default function List() {
       }),
     [users, sort]
   );
+
+  const flipKey = `${users.map((user) => user.id).join(",")} ${sort}`;
 
   return (
     <Box width={"300px"}>
@@ -52,15 +52,10 @@ export default function List() {
           Desc
         </Button>
       </ButtonGroup>
-      <Flipper flipKey={flipKey} spring={"gentle"}>
+      <Flipper flipKey={flipKey} spring="gentle">
         <Flex gap={2} direction="column" mt={5}>
           {sortedUsers.map((user) => (
-            <Flipped
-              flipId={getCardId(user.id)}
-              onExit={onExit}
-              key={getCardId(user.id)}
-              stagger
-            >
+            <Flipped flipId={user.id} key={user.id} onExit={onExit} stagger>
               {(props) => (
                 <Card
                   user={user}
