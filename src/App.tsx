@@ -1,12 +1,5 @@
-import {
-  MutationCache,
-  QueryCache,
-  QueryClient,
-  QueryClientProvider,
-} from "@tanstack/react-query";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Box, ChakraProvider, Flex } from "@chakra-ui/react";
-import { mutationErrorHandler } from "./utils/errorHandler";
-import { queryErrorHandler } from "./utils/errorHandler";
 import axios from "axios";
 import PokemonList from "./components/PokemonList";
 import { BrowserRouter, NavLink, Route } from "react-router-dom";
@@ -36,12 +29,6 @@ const queryClient = new QueryClient({
       retry: 0,
     },
   },
-  queryCache: new QueryCache({
-    onError: queryErrorHandler,
-  }),
-  mutationCache: new MutationCache({
-    onError: mutationErrorHandler,
-  }),
 });
 
 export default function App() {
