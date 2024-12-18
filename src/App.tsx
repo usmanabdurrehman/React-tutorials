@@ -1,9 +1,4 @@
-import {
-  MutationCache,
-  QueryCache,
-  QueryClient,
-  QueryClientProvider,
-} from "@tanstack/react-query";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Box, ChakraProvider, Flex } from "@chakra-ui/react";
 import axios from "axios";
 import PokemonList from "./components/PokemonList";
