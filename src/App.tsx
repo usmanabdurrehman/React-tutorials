@@ -5,14 +5,13 @@ import {
   QueryClientProvider,
 } from "@tanstack/react-query";
 import { Box, ChakraProvider, Flex } from "@chakra-ui/react";
-import { mutationErrorHandler } from "./utils/errorHandler";
-import { queryErrorHandler } from "./utils/errorHandler";
 import axios from "axios";
 import PokemonList from "./components/PokemonList";
 import { BrowserRouter, NavLink, Route } from "react-router-dom";
 import { Routes } from "react-router-dom";
 import Home from "./components/Home";
 import { getAccessToken } from "./utils/tokenHandler";
+import { mutationErrorHandler, queryErrorHandler } from "./utils/errorHandler";
 
 axios.defaults.baseURL = "http://localhost:7000";
 
@@ -36,11 +35,11 @@ const queryClient = new QueryClient({
       retry: 0,
     },
   },
-  queryCache: new QueryCache({
-    onError: queryErrorHandler,
-  }),
   mutationCache: new MutationCache({
     onError: mutationErrorHandler,
+  }),
+  queryCache: new QueryCache({
+    onError: queryErrorHandler,
   }),
 });
 
