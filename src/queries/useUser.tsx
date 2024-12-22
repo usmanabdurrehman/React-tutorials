@@ -11,6 +11,7 @@ export const useUser = () => {
         email: "alex@gmail.com",
         password: "123456",
         confirmPassword: "123456",
+        teamMembers: [{ email: "a@a.com", name: "Alex" }],
       };
     },
   });
