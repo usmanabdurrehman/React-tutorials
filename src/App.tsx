@@ -1,7 +1,10 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import "./index.css";
 import { ChakraProvider } from "@chakra-ui/react";
-import Form from "./Components/Form";
+import TanstackForm from "./Components/Tanstack";
+import FormikForm from "./Components/FormikForm";
+import { MantineForm } from "./Components/MantineForm";
+import RHFForm from "./Components/RHFForm";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -18,7 +21,10 @@ export default function App() {
   return (
     <ChakraProvider>
       <QueryClientProvider client={queryClient}>
-        <Form />
+        {/* <TanstackForm /> */}
+        {/* <FormikForm /> */}
+        <MantineForm />
+        {/* <RHFForm /> */}
       </QueryClientProvider>
     </ChakraProvider>
   );
