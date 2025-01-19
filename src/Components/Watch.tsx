@@ -9,7 +9,7 @@ import {
 
 const Name = () => {
   const { watch } = useFormContext();
-  const name = watch("name");
+  const name = useWatch({ name: "name" });
 
   console.log("Child Rerendered");
 
@@ -22,15 +22,13 @@ const Name = () => {
 
 export default function Watch() {
   const form = useForm();
-  const name = form.watch("name");
+  // const name = form.watch("name");
 
   console.log("Parent Rerendered");
 
   return (
     <FormProvider {...form}>
-      <Badge colorScheme="red">
-        <b>Name:</b> {name}
-      </Badge>
+      <Name />
       <FormControl mt={2}>
         <FormLabel>Name</FormLabel>
         <Input {...form.register("name")} />

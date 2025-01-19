@@ -5,17 +5,19 @@ import {
   Flex,
   FormControl,
   FormLabel,
+  Heading,
   Text,
 } from "@chakra-ui/react";
-import { Heading } from "lucide-react";
 import { FormProvider, useForm, useWatch } from "react-hook-form";
 import ControlledInput from "./Controlled/ControlledInput";
 import ControlledSwitch from "./Controlled/ControlledSwitch";
 
-const FormDisplay = () => {
-  const [name, description, isSenior, isRetired] = useWatch({
-    name: ["name", "description", "isSenior", "isRetired"],
+const FormDisplayText = () => {
+  const [name, description] = useWatch({
+    name: ["name", "description"],
   });
+
+  console.log("FormDisplayText rendered");
 
   return (
     <Box>
@@ -23,15 +25,50 @@ const FormDisplay = () => {
       <Text fontWeight="bold" mt={1}>
         {description}
       </Text>
+    </Box>
+  );
+};
+
+const FormDisplaySenior = () => {
+  const isSenior = useWatch({
+    name: "isSenior",
+  });
+
+  console.log("FormDisplaySenior rendered");
+
+  return (
+    <Box>
       {isSenior && (
         <Badge mt={2} colorScheme="green">
           Is Senior
         </Badge>
       )}
-      <Button mt={2} isDisabled={isRetired} colorScheme="blue">
-        Get Stats
-      </Button>
     </Box>
+  );
+};
+
+const FormDisplayBtn = () => {
+  const isRetired = useWatch({
+    name: "isRetired",
+  });
+
+  console.log("FormDisplayBtn rendered");
+
+  return (
+    <Button mt={2} isDisabled={isRetired} colorScheme="blue">
+      Get Stats
+    </Button>
+  );
+};
+
+const FormDisplay = () => {
+  console.log("FormDisplay rendered");
+  return (
+    <>
+      <FormDisplayText />
+      <FormDisplaySenior />
+      <FormDisplayBtn />
+    </>
   );
 };
 
@@ -60,8 +97,12 @@ export default function SeperateWatch() {
   return (
     <FormProvider {...form}>
       <Flex gap={2}>
-        <FormDisplay />
-        <Form />
+        <Box flex="1">
+          <FormDisplay />
+        </Box>
+        <Box flex="1">
+          <Form />
+        </Box>
       </Flex>
     </FormProvider>
   );

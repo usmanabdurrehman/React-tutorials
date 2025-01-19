@@ -1,10 +1,11 @@
 import { Box, FormControl, FormLabel, Select } from "@chakra-ui/react";
-import { useForm } from "react-hook-form";
+import { FormProvider, useForm } from "react-hook-form";
 import { MEMBERS } from "@/constants";
 import { useMembers } from "@/queries/useMembers";
+import ControlledSelect from "./Controlled/ControlledSelect";
 
 export const ControlledPrefer = () => {
-  const { register } = useForm({
+  const form = useForm({
     defaultValues: { member: "Michael" },
   });
 
@@ -12,19 +13,16 @@ export const ControlledPrefer = () => {
 
   return (
     <Box>
-      <FormControl mt={2}>
-        <FormLabel>Member</FormLabel>
-        <Select
-          {...register("member")}
-          placeholder="Select Member"
-          name="member"
-          mt={2}
-        >
-          {MEMBERS.map((value) => (
-            <option value={value}>{value}</option>
-          ))}
-        </Select>
-      </FormControl>
+      <FormProvider {...form}>
+        <FormControl mt={2}>
+          <FormLabel>Member</FormLabel>
+          <ControlledSelect placeholder="Select Member" name="member" mt={2}>
+            {members.map((value) => (
+              <option value={value}>{value}</option>
+            ))}
+          </ControlledSelect>
+        </FormControl>
+      </FormProvider>
     </Box>
   );
 };

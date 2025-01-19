@@ -4,6 +4,7 @@ import { Box, ChakraProvider } from "@chakra-ui/react";
 import { ControlledPrefer } from "./Components/ControlledPrefer";
 import { MultipleFormSubmissions } from "./Components/MultipleFormSubmissions";
 import Watch from "./Components/Watch";
+import SeperateWatch from "./Components/SeperateWatch";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -21,10 +22,10 @@ export default function App() {
     <ChakraProvider>
       <QueryClientProvider client={queryClient}>
         <Box p={4} m={4} boxShadow={"md"} borderRadius="md">
-          {/* <DynamicValueUpdate /> */}
           {/* <ControlledPrefer /> */}
-          {/* <MultipleFormSubmissions /> */}
-          <Watch />
+          <MultipleFormSubmissions />
+          {/* <SeperateWatch /> */}
+          {/* <Watch /> */}
         </Box>
       </QueryClientProvider>
     </ChakraProvider>

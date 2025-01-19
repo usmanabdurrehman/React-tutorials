@@ -10,29 +10,43 @@ const complete = (values: FormValues) => {};
 
 export const MultipleFormSubmissions = () => {
   const form = useForm<FormValues>();
+  const { getValues } = form;
 
   return (
     <FormProvider {...form}>
-      <form onSubmit={form.handleSubmit(() => {})}>
-        <Box>
-          <FormControl mt={2}>
-            <FormLabel>Member</FormLabel>
-            <ControlledInput name="member" />
-          </FormControl>
+      <Box>
+        <FormControl mt={2}>
+          <FormLabel>Member</FormLabel>
+          <ControlledInput name="member" />
+        </FormControl>
 
-          <Flex alignItems="center" gap={2} mt={4}>
-            <Button colorScheme="blue" onClick={() => {}}>
-              Send to Admin
-            </Button>
-            <Button colorScheme="green" onClick={() => {}}>
-              Save For Later
-            </Button>
-            <Button colorScheme="pink" onClick={() => {}}>
-              Complete
-            </Button>
-          </Flex>
-        </Box>
-      </form>
+        <Flex alignItems="center" gap={2} mt={4}>
+          <Button
+            colorScheme="blue"
+            onClick={() => {
+              saveToAdmin(getValues());
+            }}
+          >
+            Send to Admin
+          </Button>
+          <Button
+            colorScheme="green"
+            onClick={() => {
+              saveForLater(getValues());
+            }}
+          >
+            Save For Later
+          </Button>
+          <Button
+            colorScheme="pink"
+            onClick={() => {
+              complete(getValues());
+            }}
+          >
+            Complete
+          </Button>
+        </Flex>
+      </Box>
     </FormProvider>
   );
 };

@@ -1,34 +1,23 @@
 import { Box, FormControl, FormLabel, Input, Switch } from "@chakra-ui/react";
-import { Controller, useForm } from "react-hook-form";
+import { Controller, FormProvider, useForm } from "react-hook-form";
+import ControlledInput from "./Controlled/ControlledInput";
+import ControlledSwitch from "./Controlled/ControlledSwitch";
 
 export const ReusableControlled = () => {
-  const { control } = useForm();
+  const form = useForm();
 
   return (
-    <Box>
-      <FormControl>
-        <FormLabel>Name</FormLabel>
-        <Controller
-          name="name"
-          control={control}
-          render={({ field }) => <Input {...field} />}
-        />
-      </FormControl>
-      <FormControl mt={2}>
-        <FormLabel>Is Retired?</FormLabel>
-        <Controller
-          name="isRetired"
-          control={control}
-          render={({ field }) => (
-            <Switch
-              isChecked={field.value}
-              onChange={(e) => {
-                field.onChange(e.target.checked);
-              }}
-            />
-          )}
-        />
-      </FormControl>
-    </Box>
+    <FormProvider {...form}>
+      <Box>
+        <FormControl>
+          <FormLabel>Name</FormLabel>
+          <ControlledInput name="name" />
+        </FormControl>
+        <FormControl mt={2}>
+          <FormLabel>Is Retired?</FormLabel>
+          <ControlledSwitch name="isRetired" />
+        </FormControl>
+      </Box>
+    </FormProvider>
   );
 };
